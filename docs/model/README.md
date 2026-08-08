@@ -133,14 +133,24 @@ accepted, and the check asserts that it is accepted.
 
 ## What the table holds today
 
-    git ls-files -- 'schema/*/fields/*.json' | wc -l
-    0
+The count moves, so what stands here is a measurement at a commit rather than a
+property of this document:
 
-No rows. This document lands first because the other issues in this milestone
-fill in a table whose rules have to exist before anybody writes a row, and it is
-the rules rather than the rows that were owed here. A reader who wants to know
-which fields the model has should run the command above rather than trust a list
-in a document, and issues #22 through #30 are where the rows come from.
+    git ls-files -- 'schema/*/fields/*.json' | wc -l
+    26
+
+Measured at `2b5a4c3`. This paragraph said `0` from the commit it landed on until
+the rows arrived, and it went on saying `0` afterwards, which is the drift a
+document invites the moment it writes down a number the tree decides. A reader
+who wants the count now runs the command, and a reader who wants to know which
+fields exist runs it without `wc` rather than looking for a list here.
+
+The rules landed before any row did, which is what this document was owed for.
+The rows arrive from the field-by-field issues in this milestone, each adding
+files under `schema/<version>/fields/` rather than editing this document. That
+ordering is also why the check reports how many rows it examined: a run over an
+empty directory and a run over a full one print different numbers, so the first
+cannot be read as the second.
 
 ## What is not settled here
 
