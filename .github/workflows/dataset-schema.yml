@@ -168,6 +168,8 @@ jobs:
                 echo "\$.dressing_peak_intensity: 'basis' is a required property" ;;
               refused-value-against-its-row.json)
                 echo "\$.noise_model.value: 'poisson_from_counts' is not one of" ;;
+              refused-empty-shell-list.json)
+                echo "\$.target_shells.value: [] should be non-empty" ;;
               *)
                 echo "" ;;
             esac

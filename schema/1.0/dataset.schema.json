@@ -30,6 +30,12 @@
     "noise_model",
     "stage_to_delay_relation",
     "subtracted_background_variance",
+    "target_composition",
+    "target_jet_geometry",
+    "target_number_density",
+    "target_resonances",
+    "target_shells",
+    "target_species",
     "uncertainty_array"
   ],
   "additionalProperties": false,
@@ -425,6 +431,93 @@
           "properties": {
             "value": {
               "$ref": "fields/subtracted-background-variance.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "target_composition": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/target-composition.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "target_jet_geometry": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/target-jet-geometry.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "target_number_density": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/target-number-density.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "target_resonances": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/target-resonances.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "target_shells": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/target-shells.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "target_species": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/target-species.json#/schema"
             }
           }
         }

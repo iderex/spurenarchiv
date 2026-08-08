@@ -1,0 +1,35 @@
+{
+  "field": "target_shells",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "A second band in the spectrogram cannot be identified with the shell that produced it, so it is either left unexplained or absorbed into the retrieved pulse as structure the field never had.",
+  "schema": {
+    "type": "array",
+    "minItems": 1,
+    "items": {
+      "type": "object",
+      "required": [
+        "shell",
+        "threshold",
+        "source"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "shell": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "threshold": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      }
+    }
+  }
+}

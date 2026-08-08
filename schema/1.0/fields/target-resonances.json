@@ -1,0 +1,33 @@
+{
+  "field": "target_resonances",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "A resonant atomic phase cannot be separated from the pulse, so the phase the resonance imposes on the electron wave packet is attributed to the field and reported as chirp.",
+  "schema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "required": [
+        "description",
+        "energy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "energy": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      }
+    }
+  }
+}
