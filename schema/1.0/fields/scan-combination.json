@@ -1,0 +1,38 @@
+{
+  "field": "scan_combination",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "An averaged trace is read as a single measurement, so a width broadened by combining scans taken hours apart under a moving delay zero is reported as the duration of the pulse.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "scan_count",
+      "how_combined"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "scan_count": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "how_combined": {
+        "enum": [
+          "single_scan",
+          "sum",
+          "mean",
+          "weighted_mean",
+          "other"
+        ]
+      },
+      "span": {
+        "type": "number",
+        "minimum": 0
+      },
+      "how_determined": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "field": "completeness_level",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "Nothing says whether the array still carries the counting statistics, so a benchmark run compares a method against a dataset whose uncertainties were supplied rather than derived without being able to see that it did.",
+  "schema": {
+    "enum": [
+      "counts",
+      "scaled",
+      "processed"
+    ]
+  }
+}

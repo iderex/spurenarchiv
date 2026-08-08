@@ -198,14 +198,7 @@
     "value": "counts"
   },
   "shots_per_point": {
-    "state": "present",
-    "value": [
-      2000,
-      2000,
-      2000,
-      2000,
-      2000
-    ]
+    "state": "not_recorded"
   },
   "acquisition_order": {
     "state": "present",
@@ -315,7 +308,18 @@
   },
   "target_shells": {
     "state": "present",
-    "value": []
+    "value": [
+      {
+        "shell": "Ne 2p",
+        "threshold": 21.56,
+        "source": "NIST Atomic Spectra Database, ionisation energies, retrieved 2026-02-11."
+      },
+      {
+        "shell": "Ne 2s",
+        "threshold": 48.47,
+        "source": "NIST Atomic Spectra Database, ionisation energies, retrieved 2026-02-11."
+      }
+    ]
   },
   "target_number_density": {
     "state": "estimated",

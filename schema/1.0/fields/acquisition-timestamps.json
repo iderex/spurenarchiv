@@ -1,0 +1,27 @@
+{
+  "field": "acquisition_timestamps",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "Drift against the wall clock is not even representable, so a feature that tracks the time of day rather than the delay cannot be recognised as one.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "start"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "start": {
+        "type": "string",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+      },
+      "point_offsets": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}
