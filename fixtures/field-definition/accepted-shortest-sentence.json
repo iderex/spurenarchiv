@@ -1,0 +1,9 @@
+{
+  "field": "near_miss_field",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "x",
+  "schema": {
+    "type": "string"
+  }
+}

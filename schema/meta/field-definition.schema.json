@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "A field definition in this board's model",
+  "description": "A schema over this board's own schema documents, not over a deposit. A deposit never references it and a new schema version does not produce a new copy of it. It carries no $id because this board owns no domain to write one under, and nothing needs to reference it by URI.",
+  "type": "object",
+  "required": [
+    "field",
+    "quantity",
+    "requirement",
+    "withoutThisField",
+    "schema"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "field": {
+      "description": "The key as it appears in a deposit's metadata document. Lower case with underscores, as docs/decisions/schema-language.md fixes.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "quantity": {
+      "description": "The physical quantity this field holds, named as docs/decisions/conventions.md names it, or the string none where the field is not a physical quantity. The unit follows from the quantity through that record and is not restated here. Nothing refuses a quantity that record does not name.",
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "requirement": {
+      "description": "What the validator does when the field is absent.",
+      "enum": [
+        "required",
+        "optional",
+        "conditional"
+      ]
+    },
+    "requiredWhen": {
+      "description": "The condition under which a conditional field is required, and where that condition is specified. Required when requirement is conditional.",
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "withoutThisField": {
+      "description": "One sentence naming the reanalysis step that fails if the field is absent. Not a description of what the field means. This schema refuses an absent or blank one and cannot judge whether the sentence says what it is supposed to say.",
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "schema": {
+      "description": "The subschema the field's value is validated against, referenced from a version's dataset schema.",
+      "type": "object"
+    }
+  },
+  "if": {
+    "required": [
+      "requirement"
+    ],
+    "properties": {
+      "requirement": {
+        "const": "conditional"
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "requiredWhen"
+    ]
+  }
+}
