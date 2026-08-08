@@ -1,0 +1,26 @@
+{
+  "field": "delay_zero_definition",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "The temporal offset between the XUV pulse and the dressing field cannot be quoted against any other measurement, because a zero fitted from the centre of the streaking modulation and a zero taken from a cross-correlation are not the same point and the difference is not recoverable from the array.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "condition",
+      "how_located"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "condition": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "how_located": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}

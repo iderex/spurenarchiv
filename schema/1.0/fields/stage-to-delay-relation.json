@@ -1,0 +1,31 @@
+{
+  "field": "stage_to_delay_relation",
+  "quantity": "none",
+  "requirement": "conditional",
+  "requiredWhen": "delay_axis_quantity is stage_position. Specified in docs/model/delay-axis.md and argued in docs/decisions/conventions.md under the stage and the factor of two.",
+  "withoutThisField": "The conversion from stage position to optical delay cannot be redone or checked, so a scan whose factor of two for a double-passed retroreflector was left out stays wrong by two on its time axis and every duration derived from it is wrong by two.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "geometry_factor",
+      "sign",
+      "stage_position_at_zero_delay"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "geometry_factor": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "sign": {
+        "enum": [
+          -1,
+          1
+        ]
+      },
+      "stage_position_at_zero_delay": {
+        "type": "number"
+      }
+    }
+  }
+}
