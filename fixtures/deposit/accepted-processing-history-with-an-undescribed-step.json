@@ -230,7 +230,20 @@
   },
   "processing_history": {
     "state": "present",
-    "value": []
+    "value": [
+      {
+        "step": "background_subtraction",
+        "parameters": {
+          "level": 0.004,
+          "per_pixel": true
+        }
+      },
+      {
+        "step": "undescribed",
+        "parameters": "unknown",
+        "description": "A step in the acquisition program that nobody in the group can now describe."
+      }
+    ]
   },
   "target_species": {
     "state": "present",

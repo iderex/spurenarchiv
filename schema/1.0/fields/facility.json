@@ -1,0 +1,11 @@
+{
+  "field": "facility",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "A beamline-wide effect cannot be looked for across the deposits it would appear in, so a distortion belonging to a source is attributed to each measurement separately.",
+  "schema": {
+    "type": "string",
+    "minLength": 1,
+    "pattern": "\\S"
+  }
+}

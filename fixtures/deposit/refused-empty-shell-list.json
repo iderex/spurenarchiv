@@ -193,6 +193,45 @@
   "stage_to_delay_relation": {
     "state": "not_applicable"
   },
+  "instrument": {
+    "state": "present",
+    "value": "Attosecond beamline, streaking end station, spectrometer arm B."
+  },
+  "facility": {
+    "state": "present",
+    "value": "Institute for Ultrafast Optics, laboratory 2."
+  },
+  "measurement_date": {
+    "state": "present",
+    "value": "2026-02-11"
+  },
+  "publication_reference": {
+    "state": "present",
+    "value": [
+      {
+        "identifier_type": "doi",
+        "identifier": "10.0000/spurenarchiv.example"
+      }
+    ]
+  },
+  "converter": {
+    "state": "present",
+    "value": {
+      "conversion": {
+        "name": "messstube-export",
+        "version": "0.4.2",
+        "code_reference": "v0.4.2",
+        "invocation": "messstube-export --format spurenarchiv-1.0 --no-resample",
+        "source_export_checksum": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "conversion_date": "2026-02-14"
+      },
+      "description": "Straight relabelling of the acquisition program's binary dump; no arithmetic on the array."
+    }
+  },
+  "processing_history": {
+    "state": "present",
+    "value": []
+  },
   "target_species": {
     "state": "present",
     "value": "Ne"

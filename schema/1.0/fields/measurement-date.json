@@ -1,0 +1,10 @@
+{
+  "field": "measurement_date",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "Two deposits cannot be placed in the same campaign, so a drift that ran across a week of beamtime cannot be identified as one drift.",
+  "schema": {
+    "type": "string",
+    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+  }
+}

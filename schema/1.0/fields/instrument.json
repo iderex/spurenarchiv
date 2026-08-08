@@ -1,0 +1,11 @@
+{
+  "field": "instrument",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "Two deposits taken on the same apparatus cannot be recognised as such, so a systematic that shows up in both is read as two independent confirmations of it.",
+  "schema": {
+    "type": "string",
+    "minLength": 1,
+    "pattern": "\\S"
+  }
+}

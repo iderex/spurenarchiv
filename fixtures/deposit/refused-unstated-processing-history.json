@@ -229,8 +229,7 @@
     }
   },
   "processing_history": {
-    "state": "present",
-    "value": []
+    "state": "not_recorded"
   },
   "target_species": {
     "state": "present",
