@@ -1,0 +1,46 @@
+{
+  "field": "transmission_function",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "A transmission that falls with energy tilts the whole trace, and the tilt is read as a chirp, so a reanalysis that cannot divide it out reports a property of the spectrometer as a property of the light.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "energies",
+      "values",
+      "how_determined"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "energies": {
+        "type": "array",
+        "minItems": 2,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "values": {
+        "type": "array",
+        "minItems": 2,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "how_determined": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "uncertainty": {
+        "type": "array",
+        "minItems": 2,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

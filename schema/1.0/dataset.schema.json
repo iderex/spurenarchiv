@@ -7,6 +7,7 @@
     "schema_version",
     "acquisition_order",
     "acquisition_timestamps",
+    "calibration_reference",
     "completeness_level",
     "converter",
     "delay_axis_quantity",
@@ -30,6 +31,8 @@
     "dressing_polarisation",
     "dressing_pulse_duration",
     "dressing_spectrum",
+    "energy_axis_quantity",
+    "energy_calibration",
     "facility",
     "instrument",
     "inter_scan_scatter",
@@ -40,6 +43,7 @@
     "publication_reference",
     "scan_combination",
     "shots_per_point",
+    "spectrometer_resolution",
     "stage_to_delay_relation",
     "subtracted_background_variance",
     "target_composition",
@@ -48,6 +52,7 @@
     "target_resonances",
     "target_shells",
     "target_species",
+    "transmission_function",
     "uncertainty_array"
   ],
   "additionalProperties": false,
@@ -79,6 +84,20 @@
           "properties": {
             "value": {
               "$ref": "fields/acquisition-timestamps.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "calibration_reference": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/calibration-reference.json#/schema"
             }
           }
         }
@@ -451,6 +470,37 @@
         }
       ]
     },
+    "energy_axis_quantity": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/energy-axis-quantity.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "energy_calibration": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/energy-calibration.json#/schema"
+            }
+          }
+        }
+      ]
+    },
     "facility": {
       "allOf": [
         {
@@ -597,6 +647,20 @@
         }
       ]
     },
+    "spectrometer_resolution": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/spectrometer-resolution.json#/schema"
+            }
+          }
+        }
+      ]
+    },
     "stage_to_delay_relation": {
       "allOf": [
         {
@@ -712,6 +776,20 @@
         }
       ]
     },
+    "transmission_function": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/transmission-function.json#/schema"
+            }
+          }
+        }
+      ]
+    },
     "uncertainty_array": {
       "allOf": [
         {
@@ -751,6 +829,34 @@
       "then": {
         "properties": {
           "detector_noise_parameters": {
+            "$ref": "#/$defs/stated"
+          }
+        }
+      }
+    },
+    {
+      "title": "energy_calibration is required when energy_axis_quantity is kinetic_energy",
+      "description": "energy_axis_quantity is kinetic_energy. Specified in docs/model/energy-calibration.md and argued in docs/decisions/conventions.md under kinetic energy against time of flight.",
+      "if": {
+        "required": [
+          "energy_axis_quantity"
+        ],
+        "properties": {
+          "energy_axis_quantity": {
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "const": "kinetic_energy"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "energy_calibration": {
             "$ref": "#/$defs/stated"
           }
         }
@@ -999,6 +1105,18 @@
       "refusal": "acquisition_order.index_sequence is not each index of delay_values exactly once."
     },
     {
+      "id": "resolution-curve-arms-same-length",
+      "cannot": "compares two arrays",
+      "specified_in": "docs/model/energy-calibration.md",
+      "refusal": "energies, widths and uncertainty in the resolution record have different lengths."
+    },
+    {
+      "id": "transmission-curve-arms-same-length",
+      "cannot": "compares two arrays",
+      "specified_in": "docs/model/energy-calibration.md",
+      "refusal": "energies, values and uncertainty in the transmission record have different lengths."
+    },
+    {
       "id": "integer-field-carries-an-integer-literal",
       "cannot": "sees the literal, which the parser has already turned into a number",
       "specified_in": "docs/decisions/schema-language.md",
@@ -1016,6 +1134,11 @@
       "id": "declared-optical-delay-really-is-one",
       "specified_in": "docs/model/delay-axis.md",
       "claim": "An axis declared as an optical delay is not a stage position that was labelled optimistically."
+    },
+    {
+      "id": "declared-kinetic-energy-really-is-one",
+      "specified_in": "docs/model/energy-calibration.md",
+      "claim": "An axis declared as a kinetic energy is not a flight time that was relabelled without the conversion."
     },
     {
       "id": "any-pixel-saturated-is-truthful",

@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "delay_axis_quantity": {
     "state": "present",
-    "value": "stage_position"
+    "value": "optical_delay"
   },
   "delay_jitter": {
     "state": "present",
@@ -191,12 +191,7 @@
     "value": "poisson_from_counts_and_shots"
   },
   "stage_to_delay_relation": {
-    "state": "present",
-    "value": {
-      "geometry_factor": 2.0,
-      "sign": 1,
-      "stage_position_at_zero_delay": 0.0123456
-    }
+    "state": "not_applicable"
   },
   "completeness_level": {
     "state": "present",
@@ -261,24 +256,10 @@
   },
   "energy_axis_quantity": {
     "state": "present",
-    "value": "kinetic_energy"
+    "value": "time_of_flight"
   },
   "energy_calibration": {
-    "state": "present",
-    "value": {
-      "form": "flight_time_analytic",
-      "parameters": {
-        "flight_length": 0.5,
-        "time_zero": 1.4e-08,
-        "electron_mass_source": "CODATA 2022"
-      },
-      "retardation_voltage": 300.0,
-      "uncertainty": {
-        "value": 0.08,
-        "how_obtained": "Spread of the fitted photoline centre across the four calibration gases."
-      },
-      "description": "Kinetic energy from flight time by the field-free relation with a retarding stage, fitted on four known photolines."
-    }
+    "state": "not_applicable"
   },
   "calibration_reference": {
     "state": "present",

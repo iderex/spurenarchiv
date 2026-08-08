@@ -1,0 +1,37 @@
+{
+  "field": "calibration_reference",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "Nothing says which accepted number the energy axis was pinned to, so two deposits calibrated against two published values of the same photoline disagree by that difference and neither says so.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "species",
+      "transition",
+      "accepted_value",
+      "source"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "species": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "transition": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "accepted_value": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "source": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}

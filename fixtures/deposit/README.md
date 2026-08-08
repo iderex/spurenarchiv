@@ -30,6 +30,8 @@ never reached.
 | `accepted-conditional-stated.json` | a stage-position axis with the stage relation given | accepted |
 | `refused-value-against-its-row.json` | `noise_model` carrying a value no row admits | refused, naming the value |
 | `refused-empty-shell-list.json` | `target_shells` present and empty | refused, naming the empty list |
+| `refused-energy-axis-without-calibration.json` | `energy_calibration` carrying `not_recorded` on a kinetic-energy axis | refused, naming the state |
+| `accepted-flight-time-axis-without-calibration.json` | the same, on a time-of-flight axis | accepted |
 | `refused-counts-without-shots.json` | `completeness_level` still `counts` and `shots_per_point` carrying `not_recorded` | refused, naming the state |
 | `accepted-processed-without-shots.json` | the same, at `completeness_level` `processed` | accepted |
 | `refused-unstated-processing-history.json` | `processing_history` carrying `not_recorded` | refused, naming the state |
