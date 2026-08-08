@@ -1,0 +1,5 @@
+{
+  "schema_version": "1.0",
+  "note": "A fixture metadata document. It is not a conforming deposit; what it exists for is its bytes.",
+  "energy_calibration_offset_ev": 0.43
+}
