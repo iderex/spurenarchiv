@@ -1,0 +1,89 @@
+# Fixture size ceiling (#9). The fixtures in this repository are measurement
+# arrays, and a real spectrogram is megabytes. Once one is committed it is in the
+# history for good and every later clone pays for it, so the ceiling is refused
+# by a machine rather than asked for in a paragraph. docs/testing.md is where the
+# number and the reasoning behind it are written.
+name: fixture-size
+
+on:
+  # Every branch and every pull request. A fixture that enters the history on a
+  # branch is in the history whether or not that branch is ever merged, so a
+  # pull_request-only trigger would refuse it after the fact rather than before.
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+# Read-only: the check only reads the tracked tree.
+permissions:
+  contents: read
+
+# Cancel a superseded run on the same ref; the scan is cheap and idempotent.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ceiling:
+    name: Fixture size ceiling
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # No step pushes via git, so do not persist the GITHUB_TOKEN in .git/config.
+          persist-credentials: false
+
+      - name: Refuse a tracked fixture above the ceiling
+        # The ceiling lives here rather than in the document, so that the value a
+        # reader quotes is the value the machine uses. Passed as an environment
+        # variable and never interpolated into the script.
+        env:
+          CEILING_BYTES: "65536"
+        run: |
+          set -euo pipefail
+          ceiling="$CEILING_BYTES"
+
+          # `git ls-files -s` gives the staged blob object id per path, so the
+          # size judged is the size of the bytes git holds and not the size of
+          # the file on disk. A working tree can differ from the commit; the
+          # commit is what everybody who clones this repository pays for.
+          #
+          # The listing goes to a file rather than into a variable: it is
+          # NUL-separated so a path containing a space or a newline still parses,
+          # and a command substitution would drop the NUL bytes that separate it.
+          listing=$(mktemp)
+          if ! git ls-files -s -z -- fixtures/ > "$listing"; then
+            echo "::error::Could not list the tracked files under fixtures/ - failing closed rather than reporting a clean tree."
+            exit 1
+          fi
+
+          examined=0
+          over=0
+          while IFS= read -r -d '' entry; do
+            # Each record is "<mode> <object> <stage>\t<path>".
+            meta=${entry%%$'\t'*}
+            path=${entry#*$'\t'}
+            set -- $meta
+            oid=$2
+            if ! size=$(git cat-file -s "$oid"); then
+              echo "::error::Could not read the size of the tracked blob for ${path} - failing closed."
+              exit 1
+            fi
+            examined=$((examined + 1))
+            if [ "$size" -gt "$ceiling" ]; then
+              echo "::error file=${path}::${path} is ${size} bytes, above the ${ceiling} byte fixture ceiling. A fixture is the smallest array that still exercises its property; see docs/testing.md."
+              over=$((over + 1))
+            fi
+          done < "$listing"
+
+          # Say what was examined. A run over an empty fixtures/ and a run over
+          # forty small fixtures are different results and must not print the
+          # same sentence.
+          echo "Examined ${examined} tracked file(s) under fixtures/ against a ${ceiling} byte ceiling."
+
+          if [ "$over" -ne 0 ]; then
+            echo "::error::${over} tracked fixture(s) exceed the ceiling."
+            exit 1
+          fi
