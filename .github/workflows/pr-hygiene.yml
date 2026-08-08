@@ -1,0 +1,287 @@
+# Deterministic pull request hygiene (#64). Two properties of a change that are
+# decidable by reading it, judged by a machine rather than left to whoever
+# happens to look.
+#
+# The first is that a commit subject carries its issue reference. The subject is
+# the only part of a message that survives into a one-line log, so a reference
+# that lives in the body is a link nobody following the history can see.
+#
+# The second is that a commit message stays inside an allowed character set. It
+# is an allowlist and not a list of forbidden characters, because only an
+# allowlist also refuses a byte nobody has thought of yet, and because a commit
+# message cannot be corrected after it lands without rewriting history. The
+# workflow that reads source files, unicode-guard.yml, does not read git
+# metadata, so a message is not covered by it and this is not a second copy of
+# that check.
+#
+# The table is line feed, and printable ASCII from space to tilde. That is a
+# measurement rather than a preference. Run on the history this landed against:
+#
+#     git log --format=%B origin/main | LC_ALL=C tr -d '\012\040-\176' | wc -c
+#     0
+#     git log --format=%B origin/main | LC_ALL=C fold -w1 | LC_ALL=C sort -u | wc -l
+#     79
+#     git rev-list --count origin/main
+#     44
+#
+# Every byte in all 44 commit messages is a line feed or a printable ASCII
+# character, and 79 distinct byte values are used out of the 96 the table
+# admits. So the table is what the history already keeps, and adopting it
+# refuses nothing that has been written here.
+#
+# The issue reference is the other direction and this comment says so plainly.
+# No non-merge commit on main carries one in its subject today:
+#
+#     git log --no-merges --format='%s' origin/main | grep -cE '#[0-9]+'
+#     0
+#
+# The reference has been going in the body. This check reads the commits of a
+# pull request and never what has already landed, so nothing in the history is
+# retroactively refused, and the first commit it judges is the one that adds it.
+#
+# ## Contributions from outside this repository
+#
+# Somebody sending a first change has no issue number to reference, because the
+# issue does not exist until somebody here opens one. Refusing their first
+# contribution to teach them a convention is the wrong trade, so the issue
+# reference is not required when the pull request comes from a fork and its
+# author has no write access here. The character table is required of everybody:
+# it is about what can be written into a history that cannot be corrected, and it
+# does not become safer because a stranger wrote it.
+#
+# The residual is stated rather than left to be discovered. Somebody who does
+# have write access is exempt as well if they push from a fork, and nothing here
+# refuses that. And the author's association is read when the check runs, so a
+# contributor granted write access part way through a review moves from exempt to
+# required on the next run, which is the one place the same commits can get two
+# verdicts. Everything else the check reads is the commit range itself: no clock,
+# no network, nothing outside the range.
+#
+# ## What is reported and not gated
+#
+# The size of the change. A change nobody can read is a change nobody reviewed,
+# but a line count is a poor judge of that and a threshold here would refuse
+# large changes that are one readable thing. It is printed so that a reviewer
+# sees it without asking for it.
+name: pr-hygiene
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Read-only: the check reads git history and nothing else.
+permissions:
+  contents: read
+
+# Cancel a superseded run on the same pull request; the judgement depends only on
+# the commits, so re-running it costs nothing and loses nothing.
+concurrency:
+  group: pr-hygiene-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  hygiene:
+    name: Deterministic PR-hygiene checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history so the base..head range is walkable. No step pushes, so
+          # the token is not persisted into .git/config.
+          fetch-depth: 0
+          persist-credentials: false
+
+      # One step, because the judgement is defined once and a shell function does
+      # not survive into the next step. Two steps would mean two copies of the
+      # rule, and the copy the fixtures prove would not be the copy that runs.
+      - name: Judge the commits of this pull request, and the fixtures that prove the judgement bites
+        # Everything the judgement depends on arrives as an environment variable
+        # and is never interpolated into the script, so a crafted branch name or
+        # title cannot be evaluated as shell.
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
+          AUTHOR_ASSOCIATION: ${{ github.event.pull_request.author_association }}
+        run: |
+          set -euo pipefail
+
+          # The judgement. It reads a message out of a file and prints what it
+          # found. It never reads git, which is what lets the fixtures below be
+          # judged by exactly the code that judges the real commits.
+          #
+          #   $1  label to report against
+          #   $2  file holding the message
+          #   $3  yes when the issue reference is not required of this author
+          judge() {
+            label=$1
+            file=$2
+            waived=$3
+            verdict=0
+
+            # Deleting the allowed table from the message leaves exactly the bytes
+            # that are not in it, so an empty result is a conforming message and
+            # the check never has to enumerate what is forbidden.
+            outside=$(LC_ALL=C tr -d '\012\040-\176' < "$file" | LC_ALL=C wc -c)
+            if [ "$outside" -ne 0 ]; then
+              echo "FAIL  ${label}: ${outside} byte(s) outside the allowed table:"
+              LC_ALL=C tr -d '\012\040-\176' < "$file" | od -An -c | sed 's/^/        /'
+              verdict=1
+            fi
+
+            # The subject is the first line and nothing else. A reference in the
+            # body is not what this rule is about.
+            subject=$(head -n 1 "$file")
+            if printf '%s' "$subject" | grep -qE '#[0-9]+'; then
+              :
+            elif [ "$waived" = "yes" ]; then
+              echo "waive ${label}: no issue reference in the subject, and this is an outside contribution."
+            else
+              echo "FAIL  ${label}: the subject carries no issue reference. Put the issue as #<number> in the first line, where a one-line log still shows it."
+              verdict=1
+            fi
+
+            if [ "$verdict" -eq 0 ]; then
+              echo "ok    ${label}"
+            fi
+            return "$verdict"
+          }
+
+          # The exemption, decided once. A fork whose author has no write access
+          # here is an outside contribution; everything else is not.
+          exempt=no
+          case "$AUTHOR_ASSOCIATION" in
+            OWNER|MEMBER|COLLABORATOR) ;;
+            *) [ "$HEAD_IS_FORK" = "true" ] && exempt=yes ;;
+          esac
+          echo "Outside contribution: ${exempt} (fork=${HEAD_IS_FORK}, association=${AUTHOR_ASSOCIATION})."
+
+          # An explicit guard rather than a bare command substitution: a rev-list
+          # failure inside $( ) does not trip set -e, and a walk that failed would
+          # otherwise pass the gate having examined nothing.
+          if ! commits=$(git rev-list --no-merges "$BASE_SHA".."$HEAD_SHA"); then
+            echo "::error::Could not walk the commit range ${BASE_SHA}..${HEAD_SHA} - failing closed rather than reporting a clean range."
+            exit 1
+          fi
+
+          work=$(mktemp -d)
+          examined=0
+          failed=0
+          for sha in $commits; do
+            git show -s --format='%B' "$sha" > "$work/message"
+            if ! judge "$sha" "$work/message" "$exempt"; then
+              failed=$((failed + 1))
+            fi
+            examined=$((examined + 1))
+          done
+
+          # Merge commits are not examined, which is the range the DCO gate walks
+          # too. Their messages are written by the forge rather than by a
+          # contributor, and a rule about what somebody typed does not reach them.
+          echo "Examined ${examined} non-merge commit(s) in ${BASE_SHA}..${HEAD_SHA}."
+
+          if [ "$failed" -ne 0 ]; then
+            echo "::error::${failed} commit(s) in this pull request do not pass. A message cannot be corrected after it lands without rewriting history, which is why this is refused before the merge rather than noted after it."
+            exit 1
+          fi
+
+          # The fixtures. Three commits built here rather than three files
+          # describing commits, so what is judged is a git object with a message
+          # in it. Fixed identities, fixed dates and the empty tree, so the same
+          # three object ids come back every run; they are built twice and
+          # compared, which is the determinism claim measured rather than
+          # asserted.
+          build_fixtures() {
+            listing=$1
+            repo=$(mktemp -d)
+            git -C "$repo" init -q
+            empty=$(git -C "$repo" hash-object -t tree /dev/null)
+            : > "$listing"
+            for name in no-issue-reference outside-the-table exempt-outside-contribution; do
+              case "$name" in
+                no-issue-reference)
+                  printf 'Add a row for the delay jitter\n\nNo reference anywhere in the subject.\n' > "$repo/m" ;;
+                outside-the-table)
+                  # A right-to-left override, which is the byte unicode-guard.yml
+                  # refuses in source and cannot see here. Written as an escape so
+                  # that this file stays inside the table it declares. Its subject
+                  # carries a reference, so the only rule it can trip is the table.
+                  printf 'Add a row for the delay jitter #64\n\nA message carrying \342\200\256 where nobody looks.\n' > "$repo/m" ;;
+                exempt-outside-contribution)
+                  printf 'Fix the units in the delay axis document\n\nA first change from somebody with no issue number yet.\n' > "$repo/m" ;;
+              esac
+              sha=$(GIT_AUTHOR_NAME=fixture GIT_AUTHOR_EMAIL=fixture@invalid \
+                    GIT_COMMITTER_NAME=fixture GIT_COMMITTER_EMAIL=fixture@invalid \
+                    GIT_AUTHOR_DATE='2026-01-01T00:00:00+00:00' \
+                    GIT_COMMITTER_DATE='2026-01-01T00:00:00+00:00' \
+                    git -C "$repo" commit-tree "$empty" -F "$repo/m")
+              printf '%s %s\n' "$name" "$sha" >> "$listing"
+              cp "$repo/m" "$repo/${name}.msg"
+            done
+            fixture_repo=$repo
+          }
+
+          first=$(mktemp)
+          second=$(mktemp)
+          build_fixtures "$first"
+          messages=$fixture_repo
+          build_fixtures "$second"
+          if ! diff -u "$first" "$second"; then
+            echo "::error::The same three fixture commits built twice have different object ids, so the verdict on them is not a function of the commits alone."
+            exit 1
+          fi
+          echo "The three fixture commits reproduce their object ids:"
+          sed 's/^/        /' "$first"
+
+          # A refusal has to be a refusal for the reason the fixture exists for.
+          # Refused because some other rule caught it would report a guard biting
+          # that was never reached.
+          report=$(mktemp)
+          expect_refused() {
+            if judge "$1" "${messages}/$1.msg" no > "$report" 2>&1; then
+              echo "::error::${1} was accepted. The judgement no longer refuses what this fixture exists to prove."
+              cat "$report"
+              exit 1
+            fi
+            if ! grep -qF -- "$2" "$report"; then
+              echo "::error::${1} was refused, but not for the reason it exists to prove. Expected the report to contain: $2"
+              cat "$report"
+              exit 1
+            fi
+            echo "refused  $1"
+          }
+
+          expect_refused no-issue-reference "the subject carries no issue reference"
+          expect_refused outside-the-table "byte(s) outside the allowed table"
+
+          # The exemption and its near miss are one fixture judged twice. Its
+          # subject carries no reference, so the only thing that moves the verdict
+          # is whether the author is an outside one.
+          if ! judge exempt-outside-contribution "${messages}/exempt-outside-contribution.msg" yes; then
+            echo "::error::exempt-outside-contribution was refused. The exemption for a first contribution is not working."
+            exit 1
+          fi
+          if judge exempt-outside-contribution "${messages}/exempt-outside-contribution.msg" no > /dev/null 2>&1; then
+            echo "::error::exempt-outside-contribution passes without the exemption, so it proves nothing about the exemption."
+            exit 1
+          fi
+          echo "accepted exempt-outside-contribution, and refused without the exemption."
+
+          echo "Checked 3 fixture commit(s): two refusals and one exemption."
+
+      - name: Report the size of this change
+        # Reported, never gated. The number is here so a reviewer sees it without
+        # asking, and a threshold is deliberately absent: a size is readable only
+        # once the work exists, and a large change that is one readable thing is
+        # not the failure a threshold would be refusing.
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          if ! git diff --shortstat "$BASE_SHA" "$HEAD_SHA"; then
+            echo "::error::Could not measure the change between ${BASE_SHA} and ${HEAD_SHA}."
+            exit 1
+          fi
