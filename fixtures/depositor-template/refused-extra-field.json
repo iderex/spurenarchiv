@@ -1,0 +1,56 @@
+{
+  "creator_name": {
+    "note": "One entry per person credited for this dataset, as they want to be credited. Required. Published: it travels with every copy of the dataset.",
+    "required": true,
+    "where": "published",
+    "value": []
+  },
+  "creator_orcid": {
+    "note": "One entry per creator who has an ORCID, in the same order as creator_name. Optional. Published. Leave the list empty if none of you wants one recorded.",
+    "required": false,
+    "where": "published",
+    "value": []
+  },
+  "creator_affiliation": {
+    "note": "Each creator's affiliation as it stands today, in the same order as creator_name. Optional. Published. It is recorded as stated at deposit and is not updated later.",
+    "required": false,
+    "where": "published",
+    "value": []
+  },
+  "contact_address": {
+    "note": "An address for questions about this dataset. Optional. Published only if it belongs to a role, such as a group or a facility address. A personal address given here is stored on the operator's machine and is not published.",
+    "required": false,
+    "where": "published only where it is a role address",
+    "value": ""
+  },
+  "depositor_name": {
+    "note": "You, the person sending this deposit. Required. Local: it stays on the operator's machine and is never written into the dataset.",
+    "required": true,
+    "where": "local",
+    "value": ""
+  },
+  "depositor_email": {
+    "note": "Where the operator answers you, including if the deposit is refused. Required. Local.",
+    "required": true,
+    "where": "local",
+    "value": ""
+  },
+  "depositor_orcid": {
+    "note": "Your ORCID. Optional. Local.",
+    "required": false,
+    "where": "local",
+    "value": ""
+  },
+  "depositor_institution": {
+    "note": "Your institution and its address. Optional. Local.",
+    "required": false,
+    "where": "local",
+    "value": ""
+  },
+  "depositor_phone": {
+    "note": "A field nobody wrote a row for.",
+    "required": false,
+    "where": "local",
+    "value": ""
+  }
+}
