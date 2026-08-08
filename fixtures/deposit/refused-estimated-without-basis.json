@@ -192,6 +192,67 @@
   "stage_to_delay_relation": {
     "state": "not_applicable"
   },
+  "completeness_level": {
+    "state": "present",
+    "value": "counts"
+  },
+  "shots_per_point": {
+    "state": "present",
+    "value": [
+      2000,
+      2000,
+      2000,
+      2000,
+      2000
+    ]
+  },
+  "acquisition_order": {
+    "state": "present",
+    "value": {
+      "kind": "randomised",
+      "index_sequence": [
+        3,
+        0,
+        4,
+        1,
+        2
+      ],
+      "description": "Delay points visited in a fixed pseudo-random order, the same order in every scan."
+    }
+  },
+  "scan_combination": {
+    "state": "present",
+    "value": {
+      "scan_count": 12,
+      "how_combined": "sum",
+      "span": 5400.0,
+      "how_determined": "Wall-clock span from the first shot of the first scan to the last shot of the twelfth."
+    }
+  },
+  "monitoring_channels": {
+    "state": "present",
+    "value": [
+      {
+        "name": "dressing pulse energy",
+        "recorded_per": "delay_point",
+        "file": "monitor-energy.bin",
+        "description": "Photodiode after the compressor, averaged over the shots at each point."
+      }
+    ]
+  },
+  "acquisition_timestamps": {
+    "state": "present",
+    "value": {
+      "start": "2026-02-11T09:14:00Z",
+      "point_offsets": [
+        0.0,
+        1080.0,
+        2160.0,
+        3240.0,
+        4320.0
+      ]
+    }
+  },
   "instrument": {
     "state": "present",
     "value": "Attosecond beamline, streaking end station, spectrometer arm B."

@@ -1,0 +1,41 @@
+{
+  "field": "monitoring_channels",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "A source drift cannot be normalised out afterwards, so a reanalysis either assumes there was none or discards the scan, and the assumption is the one that gets made.",
+  "schema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "required": [
+        "name",
+        "recorded_per"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "recorded_per": {
+          "enum": [
+            "shot",
+            "delay_point",
+            "scan"
+          ]
+        },
+        "file": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      }
+    }
+  }
+}

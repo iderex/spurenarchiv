@@ -1,0 +1,23 @@
+{
+  "field": "shots_per_point",
+  "quantity": "none",
+  "requirement": "conditional",
+  "requiredWhen": "completeness_level is counts or scaled. Specified in docs/model/acquisition.md and required by docs/decisions/raw-counts.md as part of what those two levels mean.",
+  "withoutThisField": "The Poisson uncertainty on every pixel is unavailable even though the counts are there, so the one property that makes two reanalysts agree on an error bar is gone.",
+  "schema": {
+    "oneOf": [
+      {
+        "type": "integer",
+        "minimum": 1
+      },
+      {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    ]
+  }
+}

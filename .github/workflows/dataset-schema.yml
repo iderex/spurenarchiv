@@ -172,6 +172,8 @@ jobs:
                 echo "\$.target_shells.value: [] should be non-empty" ;;
               refused-unstated-processing-history.json)
                 echo "\$.processing_history.state: 'not_recorded' is not one of ['present', 'estimated']" ;;
+              refused-counts-without-shots.json)
+                echo "\$.shots_per_point.state: 'not_recorded' is not one of ['present', 'estimated']" ;;
               *)
                 echo "" ;;
             esac

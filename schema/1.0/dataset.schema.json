@@ -5,6 +5,9 @@
   "type": "object",
   "required": [
     "schema_version",
+    "acquisition_order",
+    "acquisition_timestamps",
+    "completeness_level",
     "converter",
     "delay_axis_quantity",
     "delay_jitter",
@@ -31,9 +34,12 @@
     "instrument",
     "inter_scan_scatter",
     "measurement_date",
+    "monitoring_channels",
     "noise_model",
     "processing_history",
     "publication_reference",
+    "scan_combination",
+    "shots_per_point",
     "stage_to_delay_relation",
     "subtracted_background_variance",
     "target_composition",
@@ -49,6 +55,51 @@
     "schema_version": {
       "description": "The schema version this deposit declares itself against. Fixed here rather than left open, because these are the exact bytes a 1.0 deposit is validated against; which versions a reader will accept and read is issue #34's and not this document's.",
       "const": "1.0"
+    },
+    "acquisition_order": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/acquisition-order.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "acquisition_timestamps": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/acquisition-timestamps.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "completeness_level": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/completeness-level.json#/schema"
+            }
+          }
+        }
+      ]
     },
     "converter": {
       "allOf": [
@@ -456,6 +507,20 @@
         }
       ]
     },
+    "monitoring_channels": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/monitoring-channels.json#/schema"
+            }
+          }
+        }
+      ]
+    },
     "noise_model": {
       "allOf": [
         {
@@ -499,6 +564,34 @@
           "properties": {
             "value": {
               "$ref": "fields/publication-reference.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "scan_combination": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/scan-combination.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "shots_per_point": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/shots-per-point.json#/schema"
             }
           }
         }
@@ -658,6 +751,37 @@
       "then": {
         "properties": {
           "detector_noise_parameters": {
+            "$ref": "#/$defs/stated"
+          }
+        }
+      }
+    },
+    {
+      "title": "shots_per_point is required when completeness_level is counts or scaled",
+      "description": "completeness_level is counts or scaled. Specified in docs/model/acquisition.md and required by docs/decisions/raw-counts.md as part of what those two levels mean.",
+      "if": {
+        "required": [
+          "completeness_level"
+        ],
+        "properties": {
+          "completeness_level": {
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "enum": [
+                  "counts",
+                  "scaled"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "shots_per_point": {
             "$ref": "#/$defs/stated"
           }
         }
@@ -855,6 +979,24 @@
       "cannot": "reads a file outside the metadata document",
       "specified_in": "docs/model/uncertainty.md",
       "refusal": "the uncertainty array has a different shape from the spectrogram."
+    },
+    {
+      "id": "scan-count-agrees-between-the-two-fields-that-carry-it",
+      "cannot": "compares two values",
+      "specified_in": "docs/model/acquisition.md",
+      "refusal": "scan_combination.scan_count and inter_scan_scatter.scan_count are both stated and differ."
+    },
+    {
+      "id": "shots-per-point-length-matches-delay-values",
+      "cannot": "compares two arrays",
+      "specified_in": "docs/model/acquisition.md",
+      "refusal": "shots_per_point is an array and has a different length from delay_values."
+    },
+    {
+      "id": "acquisition-order-is-a-permutation-of-the-delay-points",
+      "cannot": "compares an array against another array's length",
+      "specified_in": "docs/model/acquisition.md",
+      "refusal": "acquisition_order.index_sequence is not each index of delay_values exactly once."
     },
     {
       "id": "integer-field-carries-an-integer-literal",
