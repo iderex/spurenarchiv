@@ -1,0 +1,69 @@
+{
+  "field": "converter",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "The deposits a converter touched cannot be listed when that converter is found to have misread a field, so a discovered misread becomes an announcement that some unknown part of the archive is wrong.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "conversion"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "conversion": {
+        "oneOf": [
+          {
+            "const": "unknown"
+          },
+          {
+            "type": "object",
+            "required": [
+              "name",
+              "version",
+              "code_reference",
+              "source_export_checksum",
+              "conversion_date"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "code_reference": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "invocation": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "source_export_checksum": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "conversion_date": {
+                "type": "string",
+                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+              }
+            }
+          }
+        ]
+      },
+      "description": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}

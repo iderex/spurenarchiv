@@ -1,0 +1,32 @@
+{
+  "field": "publication_reference",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "The published number this trace stands behind cannot be found, so a reanalysis that disagrees with it has nothing to disagree with and cannot be checked against what the authors reported.",
+  "schema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "required": [
+        "identifier_type",
+        "identifier"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "identifier_type": {
+          "enum": [
+            "doi",
+            "arxiv",
+            "handle",
+            "other"
+          ]
+        },
+        "identifier": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      }
+    }
+  }
+}

@@ -170,6 +170,8 @@ jobs:
                 echo "\$.noise_model.value: 'poisson_from_counts' is not one of" ;;
               refused-empty-shell-list.json)
                 echo "\$.target_shells.value: [] should be non-empty" ;;
+              refused-unstated-processing-history.json)
+                echo "\$.processing_history.state: 'not_recorded' is not one of ['present', 'estimated']" ;;
               *)
                 echo "" ;;
             esac

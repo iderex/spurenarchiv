@@ -5,6 +5,7 @@
   "type": "object",
   "required": [
     "schema_version",
+    "converter",
     "delay_axis_quantity",
     "delay_jitter",
     "delay_reference_point",
@@ -26,8 +27,13 @@
     "dressing_polarisation",
     "dressing_pulse_duration",
     "dressing_spectrum",
+    "facility",
+    "instrument",
     "inter_scan_scatter",
+    "measurement_date",
     "noise_model",
+    "processing_history",
+    "publication_reference",
     "stage_to_delay_relation",
     "subtracted_background_variance",
     "target_composition",
@@ -43,6 +49,23 @@
     "schema_version": {
       "description": "The schema version this deposit declares itself against. Fixed here rather than left open, because these are the exact bytes a 1.0 deposit is validated against; which versions a reader will accept and read is issue #34's and not this document's.",
       "const": "1.0"
+    },
+    "converter": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/converter.json#/schema"
+            }
+          }
+        }
+      ]
     },
     "delay_axis_quantity": {
       "allOf": [
@@ -377,6 +400,34 @@
         }
       ]
     },
+    "facility": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/facility.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "instrument": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/instrument.json#/schema"
+            }
+          }
+        }
+      ]
+    },
     "inter_scan_scatter": {
       "allOf": [
         {
@@ -386,6 +437,20 @@
           "properties": {
             "value": {
               "$ref": "fields/inter-scan-scatter.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "measurement_date": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/measurement-date.json#/schema"
             }
           }
         }
@@ -403,6 +468,37 @@
           "properties": {
             "value": {
               "$ref": "fields/noise-model.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "processing_history": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/processing-history.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "publication_reference": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/publication-reference.json#/schema"
             }
           }
         }
