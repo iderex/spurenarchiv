@@ -36,6 +36,9 @@ never reached.
 | `accepted-processed-without-shots.json` | the same, at `completeness_level` `processed` | accepted |
 | `refused-unstated-processing-history.json` | `processing_history` carrying `not_recorded` | refused, naming the state |
 | `accepted-processing-history-with-an-undescribed-step.json` | `processing_history` carrying a subtraction and one undescribed step | accepted |
+| `refused-transposed-array.json` | `spectrogram_axis_order` reading `energy` first, with the shape swapped to match | refused, naming the order |
+| `refused-saturated-without-a-marker.json` | `any_pixel_saturated` true and `saturated_pixel_marker` not applicable | refused, naming the state |
+| `accepted-saturated-with-a-marker.json` | the same, with the marker given | accepted |
 
 The three around `delay_jitter` are the set the Done-when of issue #96 asks for,
 and they are that field rather than a required one on purpose. A depositor who
@@ -44,6 +47,14 @@ exact defect `docs/decisions/absence.md` exists against, and the near miss besid
 it is the same depositor writing the state instead. The distance between the
 refused file and the accepted one is one key, so what the refusal reaches is
 visible rather than argued.
+
+`refused-transposed-array.json` is the deposit that would otherwise be read wrong
+rather than refused. Its shape and its axis order agree with each other, so
+nothing about it is malformed; what it declares is that the block was written with
+the energy index varying slowest, which `docs/spec/deposit-layout.md`'s read does
+not fit and `schema/1.0/fields/spectrogram-axis-order.json` does not admit. The
+base beside it is the near miss, one value away, and `docs/model/spectrogram.md`
+is where admitting one order is argued.
 
 `refused-value-against-its-row.json` is the one that proves the assembly is not
 just a list of key names. Its `noise_model` reads `poisson_from_counts`, which is

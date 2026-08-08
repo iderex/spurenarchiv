@@ -1,0 +1,28 @@
+{
+  "field": "axis_bin_convention",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "A reader cannot tell a coordinate that labels the middle of a bin from one that labels its edge, which is a half-bin shift on both axes that no reanalysis detects from the data and that moves the retrieved delay zero by the same amount.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "delay",
+      "energy"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "delay": {
+        "enum": [
+          "bin_centre",
+          "bin_edge"
+        ]
+      },
+      "energy": {
+        "enum": [
+          "bin_centre",
+          "bin_edge"
+        ]
+      }
+    }
+  }
+}

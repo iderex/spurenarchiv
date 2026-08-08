@@ -1,0 +1,50 @@
+{
+  "field": "spectrogram",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "Nothing says which file holds the measurement, how many delay points and energy bins it has, or how to turn its bytes into numbers, so the array cannot be read at all and no reanalysis starts.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "file",
+      "shape",
+      "element_type",
+      "byte_order"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "file": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "shape": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "element_type": {
+        "enum": [
+          "int16",
+          "int32",
+          "int64",
+          "uint16",
+          "uint32",
+          "uint64",
+          "float32",
+          "float64"
+        ]
+      },
+      "byte_order": {
+        "enum": [
+          "little_endian",
+          "big_endian"
+        ]
+      }
+    }
+  }
+}

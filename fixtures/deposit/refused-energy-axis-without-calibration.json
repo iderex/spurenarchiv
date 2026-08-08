@@ -1,5 +1,47 @@
 {
   "schema_version": "1.0",
+  "spectrogram": {
+    "state": "present",
+    "value": {
+      "file": "spectrogram.bin",
+      "shape": [
+        5,
+        16
+      ],
+      "element_type": "int32",
+      "byte_order": "little_endian"
+    }
+  },
+  "spectrogram_axis_order": {
+    "state": "present",
+    "value": [
+      "delay",
+      "energy"
+    ]
+  },
+  "spectrogram_value_semantics": {
+    "state": "present",
+    "value": {
+      "quantity_per_pixel": "counts",
+      "per": "bin"
+    }
+  },
+  "axis_bin_convention": {
+    "state": "present",
+    "value": {
+      "delay": "bin_centre",
+      "energy": "bin_centre"
+    }
+  },
+  "unmeasured_pixel_marker": {
+    "state": "present",
+    "value": {
+      "how_marked": "every_pixel_measured"
+    }
+  },
+  "saturated_pixel_marker": {
+    "state": "not_applicable"
+  },
   "delay_axis_quantity": {
     "state": "present",
     "value": "optical_delay"
