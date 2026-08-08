@@ -131,6 +131,73 @@ kept. The fixture `fixtures/field-definition/accepted-shortest-sentence.json`
 exists to make the boundary visible: its sentence is one character, it is
 accepted, and the check asserts that it is accepted.
 
+## The assembly a deposit is judged against
+
+`schema/<version>/dataset.schema.json` is where that version's rows become the
+document one dataset's metadata is validated against. It holds four things the
+rows cannot hold and nothing the rows already hold.
+
+**The key set.** Every field the version defines is a required key, whatever the
+row's requirement state says. That is `docs/decisions/absence.md`: a deposit
+missing a key and a writer that never heard of the field are indistinguishable,
+so the key is present and carries either a value or the state saying why it does
+not. What the row's requirement state decides is which states are allowed, not
+whether the key may be absent. A row that says `required` constrains its field to
+the two states that carry a number, `present` and `estimated`.
+
+**The absence record.** Written once, in `$defs`, and applied to every field. The
+six states, the rule that a state carrying a value carries one and a state
+carrying none carries none, the basis an `estimated` field carries and the event
+or date a `withheld` one carries. Two spellings are settled there for the first
+time, `basis` and `lifted_by`, because `absence.md` fixes the shape of the record
+and no record names its keys. The same file refuses a basis on a field that is
+not estimated and an event on a field that is not withheld, by the argument
+`absence.md` makes for the value in both directions: a state used as a comment is
+the defect, and it does not become smaller when the comment is in a different
+slot.
+
+**The conditional shapes.** A row names its condition in prose, in
+`requiredWhen`, because a reference carries a value and not a condition. The
+assembly writes the same condition as `if` and `then`, so the condition exists
+twice by necessity, and the check below compares the two rather than trusting
+them.
+
+**What the schema cannot refuse.** `deferred_checks` lists the refusals that are
+the validator's because JSON Schema cannot make them, as
+`docs/decisions/schema-language.md` requires: the array-length comparisons, the
+conditions that reach a file outside the metadata document, the integer written
+with a fractional part, and the repeated key. Beside it is
+`not_refused_anywhere`, which holds the entries under the "what no schema here
+can refuse" headings in this directory that are not checks at all - whether a
+declared optical delay really is one, whether a background declared as none
+really was not subtracted, whether a method a depositor names is the method they
+used. Those are for the review in issue #59 and for a reanalyst to disbelieve.
+They are in a separate list because filing a judgement among the validator's
+deferred checks would read as a refusal somebody is going to write, and nobody
+is.
+
+A field's value is referenced out of its row, `fields/<name>.json#/schema`, and
+never copied. The sentence is not copied either: the assembly carries no
+description for a field, because the row is where the sentence lives and a second
+copy is the drift this arrangement exists to avoid.
+
+`.github/workflows/dataset-schema.yml` decides it, and it decides two things. The
+first is that the assembly is a derivation of the rows and not a second copy of
+them: the referenced rows are compared against the tracked rows, the required
+list against the key set, each field's requirement state against its row's, and
+each conditional shape against its row's `requiredWhen`. A row that lands and is
+never referenced reds it, which is the failure that would otherwise be invisible
+in a deposit that validates. The second is that the deposit fixtures under
+`fixtures/deposit/` each get the verdict their name claims, and that a refusal is
+a refusal for the reason the fixture exists for rather than for some other key
+being wrong. It says how many rows it covered and how many deposits it examined,
+so a run over one field and a run over thirty do not print the same sentence.
+
+The version a deposit is judged against is the one the deposit declares, read out
+of its own `schema_version`. Version 1.0's assembly accepts that string and no
+other. Which versions a reader will accept and read is issue #34's and not this
+document's.
+
 ## What the table holds today
 
 The count moves, so what stands here is a measurement at a commit rather than a
@@ -157,9 +224,8 @@ cannot be read as the second.
 Which fields exist, what they are called and what their sentences say. Each field
 issue in this milestone answers that for its own fields.
 
-How a version's dataset schema is assembled and what else it carries, including
-the `deferred_checks` list that `docs/decisions/schema-language.md` requires for
-the refusals a schema cannot express. That arrives with the first version's
-files.
-
 The deposit's shape on disk and the manifest, which is issue #31.
+
+The refusals in `deferred_checks`. The list is written and each entry names where
+it is specified; nothing performs any of them, and the validator that will is
+issue #32 with the fixtures issue #33 owes.

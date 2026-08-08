@@ -1,0 +1,242 @@
+# The schema a deposit is judged against (#96). A version's field rows under
+# schema/<version>/fields/ are assembled into schema/<version>/dataset.schema.json,
+# and this decides two things about that assembly.
+#
+# First, that it is a derivation of the rows rather than a second copy of them.
+# The rows are the one place a field is defined, so an assembly that has drifted
+# from them - a row landed and never referenced, a requirement state that moved,
+# a conditional whose condition was reworded in the row alone - is the failure
+# this check exists to prevent. Nothing about the drift is visible in a deposit
+# that validates, which is why it is refused by a machine and not looked for in
+# review.
+#
+# Second, that the assembly refuses what it names. The deposit fixtures under
+# fixtures/deposit/ each carry the verdict their name claims, and a refusal has
+# to be a refusal for the stated reason: a fixture rejected because some other
+# key was wrong would report the guard as biting while the guard was never
+# reached.
+name: dataset-schema
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+# Read-only: the check reads the tracked tree and validates it.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  assembly:
+    name: Deposit against the dataset schema
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      # Pinned for the reason the other workflows pin: a validator that changes
+      # under the tree changes the verdict with no commit here.
+      CJS_VERSION: "0.37.4"
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+
+      - name: The assembly is a derivation of the rows it stands on
+        run: |
+          set -euo pipefail
+
+          work=$(mktemp -d)
+          versions=0
+
+          for schema in schema/*/dataset.schema.json; do
+            [ -f "$schema" ] || continue
+            version=$(basename "$(dirname "$schema")")
+
+            # Which rows the assembly references, taken out of the document
+            # rather than out of a list somebody maintains beside it. The refs
+            # into $defs are the absence machinery and are not rows.
+            jq -r '[.. | objects | select(has("$ref")) | .["$ref"]
+                    | select(startswith("fields/"))
+                    | sub("#.*"; "")]
+                   | unique | .[]' "$schema" | LC_ALL=C sort > "$work/referenced"
+
+            if ! git ls-files -- "schema/${version}/fields/*.json" \
+                 | sed "s|^schema/${version}/||" | LC_ALL=C sort > "$work/tracked"; then
+              echo "::error::Could not list the rows of version ${version} - failing closed rather than reporting a clean tree."
+              exit 1
+            fi
+
+            if ! diff -u "$work/tracked" "$work/referenced" > "$work/d"; then
+              echo "::error file=${schema}::${schema} does not reference exactly the rows tracked under schema/${version}/fields/. A row this assembly never references is a field no deposit is judged on."
+              cat "$work/d"
+              exit 1
+            fi
+
+            rows=$(wc -l < "$work/tracked")
+            if [ "$rows" -eq 0 ]; then
+              echo "::error file=${schema}::Version ${version} has an assembly and no rows."
+              exit 1
+            fi
+
+            # Every key the version defines is present in a deposit, carrying a
+            # value or carrying its state. docs/decisions/absence.md is why that
+            # is the whole required list and not just the fields that matter.
+            jq -r '.required[]' "$schema" | LC_ALL=C sort > "$work/required"
+            {
+              echo "schema_version"
+              while IFS= read -r name; do
+                jq -r '.field' "schema/${version}/${name}"
+              done < "$work/tracked"
+            } | LC_ALL=C sort > "$work/keys"
+
+            if ! diff -u "$work/keys" "$work/required" > "$work/d"; then
+              echo "::error file=${schema}::The required list is not the key set version ${version} defines. A key missing from it is a key a deposit may leave out."
+              cat "$work/d"
+              exit 1
+            fi
+
+            # A row that says the deposit cannot stand without it constrains the
+            # field to the two states that carry a number, and a row that does
+            # not say so must not be constrained that way.
+            jq -r '.properties | to_entries[] | select(.key != "schema_version")
+                   | [.key,
+                      (if any(.value.allOf[]?; .["$ref"] == "#/$defs/stated")
+                       then "stated" else "-" end)]
+                   | @tsv' "$schema" | LC_ALL=C sort > "$work/assembly-states"
+            while IFS= read -r name; do
+              jq -r 'if .requirement == "required" then [.field, "stated"] else [.field, "-"] end
+                     | @tsv' "schema/${version}/${name}"
+            done < "$work/tracked" | LC_ALL=C sort > "$work/row-states"
+
+            if ! diff -u "$work/row-states" "$work/assembly-states" > "$work/d"; then
+              echo "::error file=${schema}::A field's requirement state in the assembly does not match its row. The left column is what the rows say."
+              cat "$work/d"
+              exit 1
+            fi
+
+            # A conditional row's condition is written twice by necessity: as
+            # prose in the row and as if/then here, because no reference carries
+            # a condition. So the two are compared rather than trusted.
+            jq -r '.allOf[]?.description' "$schema" | LC_ALL=C sort > "$work/assembly-when"
+            while IFS= read -r name; do
+              jq -r 'select(.requirement == "conditional") | .requiredWhen' "schema/${version}/${name}"
+            done < "$work/tracked" | LC_ALL=C sort > "$work/row-when"
+
+            if ! diff -u "$work/row-when" "$work/assembly-when" > "$work/d"; then
+              echo "::error file=${schema}::The conditional shapes in the assembly do not match the requiredWhen values of the rows. The left column is what the rows say."
+              cat "$work/d"
+              exit 1
+            fi
+
+            conditions=$(wc -l < "$work/row-when")
+            echo "Version ${version}: ${rows} row(s) referenced, ${conditions} conditional shape(s) matched."
+            versions=$((versions + 1))
+          done
+
+          echo "Examined ${versions} assembled dataset schema(s) under schema/."
+
+          if [ "$versions" -eq 0 ]; then
+            echo "::error::No assembled dataset schema was found, so nothing above was checked."
+            exit 1
+          fi
+
+      - name: Each deposit fixture gets the verdict its name claims, for the reason it names
+        run: |
+          set -euo pipefail
+
+          # What each refusal has to be a refusal for. Without this a fixture
+          # broken in some unrelated way would still be refused, and the run
+          # would report a guard biting that was never reached.
+          reason_for() {
+            case "$1" in
+              refused-missing-key.json)
+                echo "'delay_jitter' is a required property" ;;
+              refused-conditional-not-stated.json)
+                echo "\$.stage_to_delay_relation.state: 'not_applicable' is not one of ['present', 'estimated']" ;;
+              refused-value-beside-an-absence-state.json)
+                echo "\$.delay_jitter: " ;;
+              refused-estimated-without-basis.json)
+                echo "\$.dressing_peak_intensity: 'basis' is a required property" ;;
+              refused-value-against-its-row.json)
+                echo "\$.noise_model.value: 'poisson_from_counts' is not one of" ;;
+              *)
+                echo "" ;;
+            esac
+          }
+
+          fixtures=$(mktemp)
+          if ! git ls-files -z -- 'fixtures/deposit/*.json' > "$fixtures"; then
+            echo "::error::Could not list the deposit fixtures - failing closed rather than reporting a clean tree."
+            exit 1
+          fi
+
+          out=$(mktemp)
+          checked=0
+          while IFS= read -r -d '' path; do
+            name=$(basename "$path")
+
+            # The version comes out of the deposit, because a deposit is
+            # validated against the version it declares and never against the
+            # newest one in the tree.
+            version=$(jq -r '.schema_version // empty' "$path")
+            if [ -z "$version" ]; then
+              echo "::error file=${path}::This deposit declares no schema_version, so nothing decides which schema it is judged against."
+              exit 1
+            fi
+            schema="schema/${version}/dataset.schema.json"
+            if [ ! -f "$schema" ]; then
+              echo "::error file=${path}::This deposit declares schema version ${version} and ${schema} is not in the tree."
+              exit 1
+            fi
+
+            case "$name" in
+              accepted-*)
+                if ! uvx --no-build "check-jsonschema@${CJS_VERSION}" --schemafile "$schema" "$path"; then
+                  echo "::error file=${path}::This deposit exists to be accepted and was refused. The assembly is reaching past what it names."
+                  exit 1
+                fi
+                echo "accepted $path"
+                ;;
+              refused-*)
+                if uvx --no-build "check-jsonschema@${CJS_VERSION}" --schemafile "$schema" "$path" > "$out" 2>&1; then
+                  echo "::error file=${path}::This deposit exists to be refused and was accepted. The assembly is no longer refusing what this fixture names."
+                  cat "$out"
+                  exit 1
+                fi
+                reason=$(reason_for "$name")
+                if [ -z "$reason" ]; then
+                  echo "::error file=${path}::No expected refusal is recorded for this fixture, so its refusal proves nothing in particular. Add it to reason_for in this workflow."
+                  exit 1
+                fi
+                if ! grep -qF -- "$reason" "$out"; then
+                  echo "::error file=${path}::Refused, but not for the reason this fixture exists to prove. Expected the report to contain: ${reason}"
+                  cat "$out"
+                  exit 1
+                fi
+                echo "refused  $path"
+                ;;
+              *)
+                echo "::error file=${path}::A deposit fixture is named accepted-... or refused-.... This one says neither, so nothing decides what its verdict should be."
+                exit 1
+                ;;
+            esac
+            checked=$((checked + 1))
+          done < "$fixtures"
+
+          echo "Checked ${checked} deposit fixture(s) against the schema version each one declares."
+
+          # This step exists only to run fixtures, so a run that found none is a
+          # broken check and not a clean tree.
+          if [ "$checked" -eq 0 ]; then
+            echo "::error::No deposit fixtures were found."
+            exit 1
+          fi

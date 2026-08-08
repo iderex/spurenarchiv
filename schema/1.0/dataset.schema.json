@@ -1,0 +1,715 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "A dataset's metadata document, schema version 1.0",
+  "description": "The assembly of version 1.0's field rows into the document one dataset's metadata is judged against. Each field's value is referenced out of its row under fields/ rather than copied, so the row stays the one place the field is defined. The record that carries a field's absence state is written here once and applies to every field, as docs/decisions/absence.md fixes its shape. What this schema cannot refuse is listed in deferred_checks, and what nothing refuses at all is listed in not_refused_anywhere; the two are separate because a judgement filed among the validator's checks would read as a refusal somebody is going to write.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "delay_axis_quantity",
+    "delay_jitter",
+    "delay_reference_point",
+    "delay_sign_convention",
+    "delay_value_uncertainty",
+    "delay_values",
+    "delay_zero_definition",
+    "detection_direction",
+    "detection_efficiency",
+    "detector_angular_acceptance",
+    "detector_background",
+    "detector_dead_time",
+    "detector_noise_parameters",
+    "detector_saturation",
+    "detector_type",
+    "dressing_carrier_envelope_phase",
+    "dressing_centre_wavelength",
+    "dressing_peak_intensity",
+    "dressing_polarisation",
+    "dressing_pulse_duration",
+    "dressing_spectrum",
+    "inter_scan_scatter",
+    "noise_model",
+    "stage_to_delay_relation",
+    "subtracted_background_variance",
+    "uncertainty_array"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "description": "The schema version this deposit declares itself against. Fixed here rather than left open, because these are the exact bytes a 1.0 deposit is validated against; which versions a reader will accept and read is issue #34's and not this document's.",
+      "const": "1.0"
+    },
+    "delay_axis_quantity": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/delay-axis-quantity.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "delay_jitter": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/delay-jitter.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "delay_reference_point": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/delay-reference-point.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "delay_sign_convention": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/delay-sign-convention.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "delay_value_uncertainty": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/delay-value-uncertainty.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "delay_values": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/delay-values.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "delay_zero_definition": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/delay-zero-definition.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "detection_direction": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/detection-direction.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "detection_efficiency": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/detection-efficiency.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "detector_angular_acceptance": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/detector-angular-acceptance.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "detector_background": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/detector-background.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "detector_dead_time": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/detector-dead-time.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "detector_noise_parameters": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/detector-noise-parameters.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "detector_saturation": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/detector-saturation.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "detector_type": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/detector-type.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "dressing_carrier_envelope_phase": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/dressing-carrier-envelope-phase.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "dressing_centre_wavelength": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/dressing-centre-wavelength.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "dressing_peak_intensity": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/dressing-peak-intensity.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "dressing_polarisation": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/dressing-polarisation.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "dressing_pulse_duration": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/dressing-pulse-duration.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "dressing_spectrum": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/dressing-spectrum.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "inter_scan_scatter": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/inter-scan-scatter.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "noise_model": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/noise-model.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "stage_to_delay_relation": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/stage-to-delay-relation.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "subtracted_background_variance": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/subtracted-background-variance.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "uncertainty_array": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/uncertainty-array.json#/schema"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "title": "detector_noise_parameters is required when noise_model is detector_specific",
+      "description": "noise_model is detector_specific. Specified in docs/model/uncertainty.md.",
+      "if": {
+        "required": [
+          "noise_model"
+        ],
+        "properties": {
+          "noise_model": {
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "const": "detector_specific"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "detector_noise_parameters": {
+            "$ref": "#/$defs/stated"
+          }
+        }
+      }
+    },
+    {
+      "title": "stage_to_delay_relation is required when delay_axis_quantity is stage_position",
+      "description": "delay_axis_quantity is stage_position. Specified in docs/model/delay-axis.md and argued in docs/decisions/conventions.md under the stage and the factor of two.",
+      "if": {
+        "required": [
+          "delay_axis_quantity"
+        ],
+        "properties": {
+          "delay_axis_quantity": {
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "const": "stage_position"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "stage_to_delay_relation": {
+            "$ref": "#/$defs/stated"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "absence_state": {
+      "description": "The six states of docs/decisions/absence.md and no others. A seventh spelling is a writer inventing one.",
+      "enum": [
+        "present",
+        "estimated",
+        "not_measured",
+        "not_applicable",
+        "not_recorded",
+        "withheld"
+      ]
+    },
+    "field_record": {
+      "description": "Every field the model defines is present in a deposit, carrying a value or carrying the state that says why it does not. The state sits with the field rather than in a structure beside it, so a writer that never heard of the states cannot emit the values without them.",
+      "type": "object",
+      "required": [
+        "state"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "$ref": "#/$defs/absence_state"
+        },
+        "value": {
+          "description": "Narrowed to the field's own subschema where this record is used.",
+          "$comment": "Unconstrained here; each field's entry references its row's schema object."
+        },
+        "basis": {
+          "description": "What the estimate was derived from, or the statement that it is a typical value for this apparatus.",
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "lifted_by": {
+          "description": "The date or the named event after which a withheld value is published.",
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      },
+      "allOf": [
+        {
+          "title": "A state that carries a value carries one, and a state that carries none carries none",
+          "if": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "present",
+                  "estimated"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "value"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "value"
+              ]
+            }
+          }
+        },
+        {
+          "title": "An estimate carries its basis, and nothing else carries one",
+          "if": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "const": "estimated"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "basis"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "basis"
+              ]
+            }
+          }
+        },
+        {
+          "title": "A withheld value carries what lifts it, and nothing else carries one",
+          "if": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "const": "withheld"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "lifted_by"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "lifted_by"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "stated": {
+      "description": "The deposit does not stand without this field, so the only states it may be in are the two that carry a number.",
+      "properties": {
+        "state": {
+          "enum": [
+            "present",
+            "estimated"
+          ]
+        }
+      }
+    }
+  },
+  "deferred_checks": [
+    {
+      "id": "delay-uncertainty-length-matches-delay-values",
+      "cannot": "compares two arrays",
+      "specified_in": "docs/model/delay-axis.md",
+      "refusal": "delay_value_uncertainty and delay_values have different lengths."
+    },
+    {
+      "id": "delay-values-length-matches-array-delay-axis",
+      "cannot": "reads a file outside the metadata document",
+      "specified_in": "docs/model/delay-axis.md",
+      "refusal": "delay_values has a different length from the spectrogram's delay axis."
+    },
+    {
+      "id": "efficiency-curve-arms-same-length",
+      "cannot": "compares two arrays",
+      "specified_in": "docs/model/detector.md",
+      "refusal": "energies and values in the efficiency curve have different lengths."
+    },
+    {
+      "id": "dressing-spectrum-arms-same-length",
+      "cannot": "compares two arrays",
+      "specified_in": "docs/model/dressing-field.md",
+      "refusal": "wavelengths and spectral_intensities have different lengths."
+    },
+    {
+      "id": "uncertainty-array-shape-matches-spectrogram",
+      "cannot": "reads a file outside the metadata document",
+      "specified_in": "docs/model/uncertainty.md",
+      "refusal": "the uncertainty array has a different shape from the spectrogram."
+    },
+    {
+      "id": "integer-field-carries-an-integer-literal",
+      "cannot": "sees the literal, which the parser has already turned into a number",
+      "specified_in": "docs/decisions/schema-language.md",
+      "refusal": "a field this schema types as an integer is written with a fractional part or an exponent."
+    },
+    {
+      "id": "no-repeated-key",
+      "cannot": "sees the document before it is parsed, and the repeat is gone by then",
+      "specified_in": "docs/decisions/schema-language.md",
+      "refusal": "the metadata document repeats a key at any level."
+    }
+  ],
+  "not_refused_anywhere": [
+    {
+      "id": "declared-optical-delay-really-is-one",
+      "specified_in": "docs/model/delay-axis.md",
+      "claim": "An axis declared as an optical delay is not a stage position that was labelled optimistically."
+    },
+    {
+      "id": "any-pixel-saturated-is-truthful",
+      "specified_in": "docs/model/detector.md",
+      "claim": "A deposit declaring any_pixel_saturated as false is telling the truth."
+    },
+    {
+      "id": "background-declared-none-really-was-not-subtracted",
+      "specified_in": "docs/model/detector.md",
+      "claim": "A background declared as none really was not subtracted."
+    },
+    {
+      "id": "intensity-determination-method-is-truthful",
+      "specified_in": "docs/model/dressing-field.md",
+      "claim": "A peak intensity declared as focal_spot_energy_duration really was obtained that way."
+    },
+    {
+      "id": "polarisation-and-detection-share-a-frame",
+      "specified_in": "docs/model/dressing-field.md",
+      "claim": "The polarisation direction and the detection direction are expressed in the same frame."
+    },
+    {
+      "id": "inter-scan-scatter-really-was-measured",
+      "specified_in": "docs/model/uncertainty.md",
+      "claim": "An uncertainty method declared as measured_inter_scan_scatter really was measured."
+    }
+  ]
+}
