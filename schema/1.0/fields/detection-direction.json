@@ -1,0 +1,29 @@
+{
+  "field": "detection_direction",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "The sign of the observed streaking shift cannot be recovered, because a spectrometer looking the other way sees a trace with the opposite sign and no inspection of the array distinguishes the two.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "frame",
+      "components"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "frame": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "components": {
+        "type": "array",
+        "minItems": 3,
+        "maxItems": 3,
+        "items": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

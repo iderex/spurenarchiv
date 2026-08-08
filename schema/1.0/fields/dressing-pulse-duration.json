@@ -1,0 +1,33 @@
+{
+  "field": "dressing_pulse_duration",
+  "quantity": "time",
+  "requirement": "required",
+  "withoutThisField": "The field the reconstruction solves against cannot be built, and a duration quoted without the measure it refers to cannot be compared with the one the reconstruction assumed.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "value",
+      "measure",
+      "how_determined"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "value": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "measure": {
+        "enum": [
+          "fwhm_intensity",
+          "rms_intensity",
+          "fwhm_field"
+        ]
+      },
+      "how_determined": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}

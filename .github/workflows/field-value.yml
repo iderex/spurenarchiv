@@ -1,0 +1,107 @@
+# The refusals a field's own schema makes (#25, #27, #29). A row under
+# schema/<version>/fields/ carries the subschema its value is validated against,
+# and several fields in this model are records whose whole point is a key that
+# may not be left out: an intensity without the method that produced it, a
+# background that does not say what was subtracted, a stored uncertainty with no
+# method behind it. This runs the fixtures that prove each of those refusals and
+# the near misses that prove the schema reaches no further.
+#
+# It is deliberately per field rather than per deposit. A deposit-level fixture
+# needs a version's rows assembled into a dataset schema, which is the one file
+# every field issue has to touch, and waiting for it would leave these refusals
+# unproved while the rows land.
+name: field-value
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  values:
+    name: Field value fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      CJS_VERSION: "0.37.4"
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+
+      - name: Each fixture gets the verdict its name claims
+        run: |
+          set -euo pipefail
+
+          fixtures=$(mktemp)
+          if ! git ls-files -z -- 'fixtures/field-value/*/*.json' > "$fixtures"; then
+            echo "::error::Could not list the field value fixtures - failing closed rather than reporting a clean tree."
+            exit 1
+          fi
+
+          checked=0
+          while IFS= read -r -d '' path; do
+            # The directory a fixture sits in names the row it is judged against,
+            # so a row renamed without its fixtures reds this check instead of
+            # leaving them judging nothing.
+            stem=$(basename "$(dirname "$path")")
+            row=""
+            for candidate in schema/*/fields/"${stem}".json; do
+              if [ -f "$candidate" ]; then
+                row="$candidate"
+              fi
+            done
+            if [ -z "$row" ]; then
+              echo "::error file=${path}::No field definition named ${stem}.json under schema/*/fields/."
+              exit 1
+            fi
+
+            # The row's schema describes the value, so it is lifted out on its own
+            # and given the dialect it is written in.
+            sub=$(mktemp)
+            jq '.schema + {"$schema": "https://json-schema.org/draft/2020-12/schema"}' "$row" > "$sub"
+
+            case "$(basename "$path")" in
+              accepted-*)
+                if ! uvx --no-build "check-jsonschema@${CJS_VERSION}" --schemafile "$sub" "$path"; then
+                  echo "::error file=${path}::This fixture exists to be accepted and was refused. The field's schema is reaching past what it names."
+                  exit 1
+                fi
+                echo "accepted $path"
+                ;;
+              refused-*)
+                if uvx --no-build "check-jsonschema@${CJS_VERSION}" --schemafile "$sub" "$path" > /dev/null 2>&1; then
+                  echo "::error file=${path}::This fixture exists to be refused and was accepted. The field's schema is no longer refusing what it names."
+                  exit 1
+                fi
+                echo "refused  $path"
+                ;;
+              *)
+                echo "::error file=${path}::A field value fixture is named accepted-... or refused-.... This one says neither, so nothing decides what its verdict should be."
+                exit 1
+                ;;
+            esac
+            checked=$((checked + 1))
+          done < "$fixtures"
+
+          echo "Checked ${checked} field value fixture(s)."
+
+          # This check exists only to run fixtures, so a run that found none is a
+          # broken check and not a clean tree.
+          if [ "$checked" -eq 0 ]; then
+            echo "::error::No field value fixtures were found."
+            exit 1
+          fi

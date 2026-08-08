@@ -1,0 +1,49 @@
+{
+  "field": "detector_background",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "A subtracted background cannot be added back if the amount was never recorded, and a subtraction that went slightly negative and was clipped at zero has destroyed the Poisson statistics of the whole low-count region with nothing in the array to show it.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "subtracted"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "subtracted": {
+        "oneOf": [
+          {
+            "const": "none"
+          },
+          {
+            "type": "object",
+            "required": [
+              "what_was_subtracted",
+              "how_obtained"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "what_was_subtracted": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "how_obtained": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "clipped_at_zero": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "dark_count_rate": {
+        "type": "number",
+        "minimum": 0
+      }
+    }
+  }
+}

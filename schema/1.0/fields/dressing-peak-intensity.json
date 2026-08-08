@@ -1,0 +1,33 @@
+{
+  "field": "dressing_peak_intensity",
+  "quantity": "intensity",
+  "requirement": "required",
+  "withoutThisField": "The intensity cannot be extracted from the trace without assuming the reconstruction being tested, so a reanalysis has to take the depositor's number and cannot otherwise tell an inference from a focal spot and a pulse energy from a value read off the streaking amplitude itself.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "value",
+      "determination_method"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "value": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "determination_method": {
+        "enum": [
+          "focal_spot_energy_duration",
+          "streaking_amplitude",
+          "ponderomotive_shift",
+          "other"
+        ]
+      },
+      "how_determined": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}

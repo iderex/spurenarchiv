@@ -1,0 +1,32 @@
+{
+  "field": "dressing_spectrum",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "The size of the single-frequency approximation cannot be judged, so a reconstruction of a broadband few-cycle pulse carries an error nobody can bound.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "wavelengths",
+      "spectral_intensities"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "wavelengths": {
+        "type": "array",
+        "minItems": 2,
+        "items": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "spectral_intensities": {
+        "type": "array",
+        "minItems": 2,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

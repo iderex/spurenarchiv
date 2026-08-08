@@ -1,0 +1,28 @@
+{
+  "field": "detector_dead_time",
+  "quantity": "time",
+  "requirement": "optional",
+  "withoutThisField": "At high count rates a dead-time-limited detector compresses the strong parts of the trace, which is exactly where the signal is, and the compression cannot be undone without the dead time and without knowing whether a pile-up correction was already applied.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "value",
+      "pile_up_correction_applied"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "value": {
+        "type": "number",
+        "minimum": 0
+      },
+      "pile_up_correction_applied": {
+        "type": "boolean"
+      },
+      "how_determined": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}
