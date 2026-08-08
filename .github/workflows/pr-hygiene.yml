@@ -281,7 +281,12 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
-          if ! git diff --shortstat "$BASE_SHA" "$HEAD_SHA"; then
+          # Three dots, so the diff runs from where the branch left the base
+          # rather than from the base's current tip. Two dots would report
+          # everything that landed on the base since the branch started as part
+          # of this change, with the sign reversed, which is a number about
+          # somebody else's work.
+          if ! git diff --shortstat --merge-base "$BASE_SHA" "$HEAD_SHA"; then
             echo "::error::Could not measure the change between ${BASE_SHA} and ${HEAD_SHA}."
             exit 1
           fi
