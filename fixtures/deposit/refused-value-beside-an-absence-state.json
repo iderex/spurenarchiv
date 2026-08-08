@@ -193,6 +193,61 @@
   "stage_to_delay_relation": {
     "state": "not_applicable"
   },
+  "target_species": {
+    "state": "present",
+    "value": "Ne"
+  },
+  "target_composition": {
+    "state": "present",
+    "value": {
+      "components": [
+        {
+          "species": "Ne",
+          "fraction": 0.997
+        },
+        {
+          "species": "N2",
+          "fraction": 0.003
+        }
+      ],
+      "how_determined": "Residual gas analyser on the chamber during the scan."
+    }
+  },
+  "target_shells": {
+    "state": "present",
+    "value": [
+      {
+        "shell": "Ne 2p",
+        "threshold": 21.56,
+        "source": "NIST Atomic Spectra Database, ionisation energies, retrieved 2026-02-11."
+      },
+      {
+        "shell": "Ne 2s",
+        "threshold": 48.47,
+        "source": "NIST Atomic Spectra Database, ionisation energies, retrieved 2026-02-11."
+      }
+    ]
+  },
+  "target_number_density": {
+    "state": "estimated",
+    "value": {
+      "value": 4e+20,
+      "how_determined": "Backing pressure and nozzle geometry, no in-situ measurement."
+    },
+    "basis": "A typical interaction-region density for this nozzle at this backing pressure; nothing was measured in the interaction region itself."
+  },
+  "target_jet_geometry": {
+    "state": "present",
+    "value": {
+      "description": "Continuous gas jet from a 100 micrometre nozzle, crossed at right angles 1 mm below the nozzle.",
+      "nozzle_diameter": 0.0001,
+      "interaction_length": 0.0003
+    }
+  },
+  "target_resonances": {
+    "state": "present",
+    "value": []
+  },
   "subtracted_background_variance": {
     "state": "present",
     "value": {

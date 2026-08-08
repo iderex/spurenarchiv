@@ -1,0 +1,25 @@
+{
+  "field": "target_number_density",
+  "quantity": "number_density",
+  "requirement": "optional",
+  "withoutThisField": "Whether space charge could have shifted and broadened the spectrum cannot be assessed at all, and a space-charge broadening left in the trace is read as a chirp.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "value",
+      "how_determined"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "value": {
+        "type": "number",
+        "minimum": 0
+      },
+      "how_determined": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}

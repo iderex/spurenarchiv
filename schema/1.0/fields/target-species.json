@@ -1,0 +1,11 @@
+{
+  "field": "target_species",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "Nothing says which photolines the trace can contain, so no band can be assigned to a shell and every binding energy the reconstruction subtracts is a guess.",
+  "schema": {
+    "type": "string",
+    "minLength": 1,
+    "pattern": "\\S"
+  }
+}

@@ -132,12 +132,12 @@
     "value": 7.9e-07
   },
   "dressing_peak_intensity": {
-    "state": "estimated",
+    "state": "present",
     "value": {
       "value": 4.2e+16,
-      "determination_method": "other"
-    },
-    "basis": "A typical on-target intensity for this beamline at this pulse energy; no focal spot was recorded for this run."
+      "determination_method": "focal_spot_energy_duration",
+      "how_determined": "Pulse energy at the target, knife-edge focal spot, and the duration in this record."
+    }
   },
   "dressing_polarisation": {
     "state": "present",
@@ -215,18 +215,7 @@
   },
   "target_shells": {
     "state": "present",
-    "value": [
-      {
-        "shell": "Ne 2p",
-        "threshold": 21.56,
-        "source": "NIST Atomic Spectra Database, ionisation energies, retrieved 2026-02-11."
-      },
-      {
-        "shell": "Ne 2s",
-        "threshold": 48.47,
-        "source": "NIST Atomic Spectra Database, ionisation energies, retrieved 2026-02-11."
-      }
-    ]
+    "value": []
   },
   "target_number_density": {
     "state": "estimated",

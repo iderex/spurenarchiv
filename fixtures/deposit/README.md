@@ -29,6 +29,7 @@ never reached.
 | `refused-conditional-not-stated.json` | a stage-position axis with the stage relation not applicable | refused, naming the state |
 | `accepted-conditional-stated.json` | a stage-position axis with the stage relation given | accepted |
 | `refused-value-against-its-row.json` | `noise_model` carrying a value no row admits | refused, naming the value |
+| `refused-empty-shell-list.json` | `target_shells` present and empty | refused, naming the empty list |
 
 The three around `delay_jitter` are the set the Done-when of issue #96 asks for,
 and they are that field rather than a required one on purpose. A depositor who
