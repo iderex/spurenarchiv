@@ -1,0 +1,98 @@
+# The sentence every field carries (#21). Every field definition in this board's
+# model has to name the reanalysis step that fails without the field, and an
+# empty slot is refused by a machine rather than caught in review. The rule and
+# the reasoning are in docs/model/README.md; the schema that decides it is
+# schema/meta/field-definition.schema.json.
+#
+# The second step is the proof that the guard bites and does not overreach. It
+# runs the fixtures and asserts the verdict each one is named for, so removing
+# the requirement from the meta-schema turns this workflow red rather than
+# quietly widening what the model accepts.
+name: field-sentence
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+# Read-only: the check reads the tracked tree and validates it.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sentence:
+    name: Field definition sentence
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      # Pinned, for the same reason the other workflows pin their tools: a
+      # validator that changes under the tree changes the verdict without any
+      # commit here.
+      CJS_VERSION: "0.37.4"
+      META: schema/meta/field-definition.schema.json
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+
+      - name: Every field definition in the tree carries its sentence
+        run: |
+          set -euo pipefail
+
+          # The listing goes to a file rather than into a variable: it is
+          # NUL-separated so a path containing a space still parses, and a
+          # command substitution would drop the separators.
+          rows=$(mktemp)
+          if ! git ls-files -z -- 'schema/*/fields/*.json' > "$rows"; then
+            echo "::error::Could not list the field definitions - failing closed rather than reporting a clean tree."
+            exit 1
+          fi
+
+          examined=0
+          while IFS= read -r -d '' path; do
+            uvx --no-build "check-jsonschema@${CJS_VERSION}" --schemafile "$META" "$path"
+            examined=$((examined + 1))
+          done < "$rows"
+
+          # Say what was examined. A run over a model with no fields yet and a
+          # run over thirty of them are different results and must not print the
+          # same sentence.
+          echo "Examined ${examined} field definition(s) under schema/*/fields/."
+
+      - name: The guard bites, and does not reach past what it names
+        run: |
+          set -euo pipefail
+
+          refuse() {
+            if uvx --no-build "check-jsonschema@${CJS_VERSION}" --schemafile "$META" "$1" > /dev/null 2>&1; then
+              echo "::error file=$1::$1 was accepted. The meta-schema is no longer refusing what this fixture exists to prove it refuses."
+              exit 1
+            fi
+            echo "refused  $1"
+          }
+
+          accept() {
+            if ! uvx --no-build "check-jsonschema@${CJS_VERSION}" --schemafile "$META" "$1"; then
+              echo "::error file=$1::$1 was refused. The meta-schema is reaching past the emptiness it is supposed to judge."
+              exit 1
+            fi
+            echo "accepted $1"
+          }
+
+          refuse fixtures/field-definition/refused-absent-sentence.json
+          refuse fixtures/field-definition/refused-blank-sentence.json
+          refuse fixtures/field-definition/refused-conditional-without-condition.json
+
+          # The near miss. One character says nothing useful and is accepted, so
+          # the guard is proved to judge emptiness and nothing about meaning.
+          accept fixtures/field-definition/accepted-shortest-sentence.json

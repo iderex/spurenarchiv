@@ -1,0 +1,8 @@
+{
+  "field": "absent_sentence_field",
+  "quantity": "none",
+  "requirement": "required",
+  "schema": {
+    "type": "string"
+  }
+}

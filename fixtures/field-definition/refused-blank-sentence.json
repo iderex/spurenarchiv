@@ -1,0 +1,9 @@
+{
+  "field": "blank_sentence_field",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": " \t ",
+  "schema": {
+    "type": "string"
+  }
+}
