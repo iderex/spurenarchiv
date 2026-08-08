@@ -1,0 +1,187 @@
+# The digests a dataset is identified by (#38). docs/spec/content-address.md is
+# the normative prose; this is the machine that judges it, and it judges the
+# three properties the specification exists to give.
+#
+# A metadata correction leaves the measurement digest alone and moves the version
+# digest. A deposit rewritten with the same content under different file names
+# reproduces every digest. One flipped bit in an array moves the measurement
+# digest.
+#
+# The second of those is not a test of any hashing code. It is the test of
+# docs/decisions/container.md's canonicity claim, and it is the only place in the
+# plan where that claim is checked by a machine. If it ever fails, the repair is
+# in container.md rather than in the specification this runs against.
+#
+# Everything below is sha256sum, sort, cut and printf. That is deliberate and it
+# is the point rather than a convenience: docs/decisions/identity.md claims every
+# digest here can be recomputed by hand from the files with a hashing tool and a
+# sort, so a check that needed this repository's software to reproduce them would
+# be checking something other than what it claims. There is no software to use
+# either way:
+#
+#     git ls-files -- tool/ | wc -l
+#     0
+name: content-address
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+# Read-only: the check reads the tracked tree and hashes it.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  digests:
+    name: The digests a dataset is identified by
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      CASES: fixtures/content-address
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # No step pushes via git, so do not persist the GITHUB_TOKEN.
+          persist-credentials: false
+
+      - name: Recompute every digest from the bytes, and assert what each one decides
+        run: |
+          set -euo pipefail
+
+          # A stored digest carries the algorithm in front of it, so a second
+          # algorithm can be added later without any stored value becoming
+          # ambiguous about which one produced it.
+          digest_of_file() {
+            printf 'sha256:%s\n' "$(sha256sum "$1" | cut -d ' ' -f 1)"
+          }
+          digest_of_stdin() {
+            printf 'sha256:%s\n' "$(sha256sum | cut -d ' ' -f 1)"
+          }
+
+          # One line per array holding the role, the length in bytes and the
+          # digest, separated by single spaces, sorted by role in byte order,
+          # line feed terminated, ASCII. The role rather than the file name is
+          # what makes the identity survive a rename.
+          measurement_listing() {
+            case_dir=$1
+            # Every named file is checked before anything is hashed, and not
+            # inside the loop that writes the listing: that loop runs in a
+            # subshell behind a pipe, where an exit would end the loop and leave
+            # a short listing to be hashed as though it were the whole dataset.
+            while read -r role path; do
+              if [ ! -f "$case_dir/$path" ]; then
+                echo "::error file=${case_dir}/roles::${case_dir}/roles names ${path} for role ${role} and there is no such file." >&2
+                return 1
+              fi
+            done < "$case_dir/roles"
+
+            LC_ALL=C sort "$case_dir/roles" | while read -r role path; do
+              file="$case_dir/$path"
+              printf '%s %s %s\n' "$role" "$(stat -c %s "$file")" "$(digest_of_file "$file")"
+            done
+          }
+
+          # Three digests per dataset, printed one per line as "<name> <digest>".
+          digests_of() {
+            case_dir=$1
+            listing=$(mktemp)
+            measurement_listing "$case_dir" > "$listing"
+            if [ ! -s "$listing" ]; then
+              echo "::error file=${case_dir}::No arrays were listed for ${case_dir}, so its measurement digest would cover nothing. Failing closed." >&2
+              exit 1
+            fi
+            # A repeated role would make the sort ambiguous and two different
+            # datasets could produce one listing, so it is refused here rather
+            # than left to whoever writes the next fixture.
+            if [ "$(cut -d ' ' -f 1 "$listing" | LC_ALL=C sort -u | wc -l)" -ne "$(wc -l < "$listing")" ]; then
+              echo "::error file=${case_dir}/roles::A role is used twice in ${case_dir}/roles. The listing a measurement digest covers is sorted by role, so a repeated role has no defined order." >&2
+              exit 1
+            fi
+            measurement=$(digest_of_stdin < "$listing")
+            metadata=$(digest_of_file "$case_dir/metadata.json")
+            version=$(printf 'measurement %s\nmetadata %s\n' "$measurement" "$metadata" | digest_of_stdin)
+            printf 'measurement %s\nmetadata %s\nversion %s\n' "$measurement" "$metadata" "$version"
+          }
+
+          value() {
+            awk -v k="$2" '$1 == k { print $2 }' "$1"
+          }
+
+          work=$(mktemp -d)
+          examined=0
+          for case_dir in "$CASES"/*/; do
+            name=$(basename "$case_dir")
+            digests_of "${case_dir%/}" > "$work/$name"
+            echo "${name}:"
+            sed 's/^/        /' "$work/$name"
+            examined=$((examined + 1))
+          done
+
+          echo "Recomputed the digests of ${examined} fixture dataset(s) under ${CASES}."
+          if [ "$examined" -eq 0 ]; then
+            echo "::error::No fixture datasets were found, so nothing above was checked."
+            exit 1
+          fi
+
+          # The pinned expectation. Without it the assertions below would only
+          # show the construction agreeing with itself; with it they show that
+          # the same bytes produce the same digests on a machine that has never
+          # seen this repository before.
+          if ! diff -u "$CASES/base/expected-digests" "$work/base"; then
+            echo "::error file=${CASES}/base/expected-digests::The digests recomputed from the bytes are not the ones recorded beside them. Either the fixture bytes moved or the construction did, and the specification says which of the two is allowed to."
+            exit 1
+          fi
+          echo "base reproduces the digests recorded beside it."
+
+          fail=0
+          assert_same() {
+            if [ "$(value "$work/$1" "$3")" = "$(value "$work/$2" "$3")" ]; then
+              echo "ok    $1 and $2 have the same $3 digest"
+            else
+              echo "FAIL  $1 and $2 should have the same $3 digest and do not"
+              fail=1
+            fi
+          }
+          assert_differs() {
+            if [ "$(value "$work/$1" "$3")" != "$(value "$work/$2" "$3")" ]; then
+              echo "ok    $1 and $2 have different $3 digests"
+            else
+              echo "FAIL  $1 and $2 should have different $3 digests and do not"
+              fail=1
+            fi
+          }
+
+          # A metadata correction is not a different measurement. This is the
+          # property the whole two-digest construction exists for, and it is why
+          # one digest over the whole deposit was refused.
+          assert_same     base corrected-metadata measurement
+          assert_differs  base corrected-metadata metadata
+          assert_differs  base corrected-metadata version
+
+          # Identical content under different file names is the same dataset.
+          # This is container.md's canonicity claim, checked here and nowhere
+          # else.
+          assert_same     base rewritten measurement
+          assert_same     base rewritten metadata
+          assert_same     base rewritten version
+
+          # One bit of one array moves the measurement digest, and moves nothing
+          # about the metadata, so the failure is reported where it happened.
+          assert_differs  base flipped-bit measurement
+          assert_same     base flipped-bit metadata
+          assert_differs  base flipped-bit version
+
+          if [ "$fail" -ne 0 ]; then
+            echo "::error::A digest does not decide what docs/spec/content-address.md says it decides."
+            exit 1
+          fi
+
+          echo "Checked 9 assertion(s) across 4 fixture dataset(s)."
