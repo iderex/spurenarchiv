@@ -91,6 +91,14 @@ A row carries exactly the keys the meta-schema names and no others. A key that i
 not one of them is refused rather than ignored, so a misspelt `withoutThisFields`
 fails instead of sitting in the file looking like it did something.
 
+A row's `schema` describes the value the field carries and not the record around
+it. `docs/decisions/absence.md` puts every field in the deposit whether or not it
+has a value, so each one is a small record holding a state and, where the state
+has one, the value. That record has the same shape for every field in the model,
+so it is written once where a version's fields are assembled rather than copied
+into thirty rows, and a row that carried its own copy would be thirty places for
+the absence machinery to drift.
+
 ## What refuses a row that skipped the rule
 
 `schema/meta/field-definition.schema.json` is a plain JSON Schema over this
