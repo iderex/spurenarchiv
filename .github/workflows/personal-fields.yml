@@ -1,0 +1,164 @@
+# The personal fields a depositor is asked for (#58). Every field on a form gets
+# filled in, and every field that gets filled in has to be stored, protected,
+# retained and eventually deleted, so the cheapest place to protect a personal
+# detail is the decision to collect it at all.
+#
+# docs/privacy.md is where that decision is written for the person it is about.
+# templates/depositor-details.json is what they actually fill in. This refuses
+# any difference between the two, in both directions: a field added to the
+# template with no row in the document is collection nobody wrote down, and a row
+# in the document with no field in the template is a document describing a form
+# that does not exist.
+#
+# It is a machine rather than a paragraph because of how the drift happens. Not
+# as one bad change, but as a field added to a form because somebody needed it
+# once, at a moment when the statement is not open in another window.
+#
+# What is compared is the key, whether it is required, and whether it is
+# published or local. The last is compared on its first word, because the
+# document's cell for the contact address carries the condition under which it is
+# published and the template's carries the same condition in the depositor's
+# words. What the check judges is that both say published; whether they say the
+# same thing about the condition is a reading, and no comparison here makes it.
+#
+# This does not check that a running program collects only these fields. There is
+# no program:
+#
+#     git ls-files -- tool/ | wc -l
+#     0
+#
+# and issue #73 holds the marking in the schema and the check over every outbound
+# path. What this refuses is a template and a statement that disagree, which is
+# the failure available today.
+name: personal-fields
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+# Read-only: the check reads the tracked tree and compares two files in it.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  collection:
+    name: The template collects what the statement declares
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      DOCUMENT: docs/privacy.md
+      TEMPLATE: templates/depositor-details.json
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # No step pushes via git, so do not persist the GITHUB_TOKEN.
+          persist-credentials: false
+
+      # One step, because the comparison is defined once and a shell function
+      # does not survive into the next step. Two steps would be two copies of the
+      # rule, and the copy the fixtures prove would not be the copy that runs.
+      - name: Compare the template against the statement, and prove the comparison bites
+        run: |
+          set -euo pipefail
+
+          # The document's table is the declaration. Only the section that names
+          # what the template asks for is read, so the sections about what the
+          # archive records without asking and what is never asked for cannot be
+          # mistaken for fields on a form.
+          from_document() {
+            awk -F'|' '
+              /^## What the template asks for$/ { inside = 1; next }
+              /^## / { inside = 0 }
+              inside && $2 ~ /^ *`[a-z_]+` *$/ {
+                key = $2; gsub(/[^a-z_]/, "", key)
+                state = $4; gsub(/[^a-z]/, "", state)
+                split($5, w, " ")
+                print key, state, w[1]
+              }' "$DOCUMENT" | tr -d '\r' | LC_ALL=C sort
+          }
+          # The carriage return is dropped so that the verdict is the same on a
+          # checkout that converted the line endings as on one that did not. The
+          # tracked bytes are line feed either way; what this removes is a red
+          # check that would have nothing to do with the rule.
+
+          # The template is the form. Its top-level keys are the fields it
+          # collects, and the two attributes beside each one are what the
+          # document's table states in its own columns.
+          from_template() {
+            jq -r 'to_entries[]
+                   | [.key,
+                      (if .value.required then "required" else "optional" end),
+                      (.value.where | split(" ")[0])]
+                   | @sh' "$1" | tr -d "'" | LC_ALL=C sort
+          }
+
+          compare() {
+            label=$1
+            template=$2
+            left=$(mktemp)
+            right=$(mktemp)
+            from_document > "$left"
+            from_template "$template" > "$right"
+
+            rows=$(wc -l < "$left")
+            if [ "$rows" -eq 0 ]; then
+              echo "::error file=${DOCUMENT}::No field rows were read out of ${DOCUMENT}, so the comparison below covered nothing. Failing closed rather than reporting agreement."
+              exit 1
+            fi
+            fields=$(wc -l < "$right")
+            if [ "$fields" -eq 0 ]; then
+              echo "::error file=${template}::No fields were read out of ${template}. Failing closed rather than reporting agreement."
+              exit 1
+            fi
+
+            if ! diff -u "$left" "$right" > "$work/d"; then
+              echo "FAIL  ${label}: the template and the statement disagree. The left column is what ${DOCUMENT} declares."
+              cat "$work/d"
+              return 1
+            fi
+            echo "ok    ${label}: ${rows} field(s) declared and collected, and they agree."
+            return 0
+          }
+
+          work=$(mktemp -d)
+
+          if ! compare "$TEMPLATE" "$TEMPLATE"; then
+            echo "::error::The form and the statement about it disagree. A field collected without a row is collection nobody wrote down, and a row with no field is a statement describing a form that does not exist."
+            exit 1
+          fi
+
+          # The proof that the comparison bites, and the near miss that proves it
+          # judges the set rather than the order.
+          expect_refused() {
+            if compare "$1" "$1" > "$work/out" 2>&1; then
+              echo "::error file=$1::This fixture exists to be refused and was accepted. The comparison is no longer catching what it names."
+              cat "$work/out"
+              exit 1
+            fi
+            if ! grep -qF -- "$2" "$work/out"; then
+              echo "::error file=$1::Refused, but not for the reason this fixture exists to prove. Expected the report to contain: $2"
+              cat "$work/out"
+              exit 1
+            fi
+            echo "refused  $1"
+          }
+
+          expect_refused fixtures/depositor-template/refused-extra-field.json "+depositor_phone"
+          expect_refused fixtures/depositor-template/refused-missing-field.json "-creator_orcid"
+          expect_refused fixtures/depositor-template/refused-published-instead-of-local.json "depositor_email"
+
+          if ! compare fixtures/depositor-template/accepted-reordered-keys.json \
+                       fixtures/depositor-template/accepted-reordered-keys.json; then
+            echo "::error::accepted-reordered-keys.json was refused. The comparison is judging the order of the keys rather than the set."
+            exit 1
+          fi
+
+          echo "Checked 4 template fixture(s): three refusals and one near miss."
