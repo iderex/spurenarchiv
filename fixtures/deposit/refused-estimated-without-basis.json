@@ -1,0 +1,210 @@
+{
+  "schema_version": "1.0",
+  "delay_axis_quantity": {
+    "state": "present",
+    "value": "optical_delay"
+  },
+  "delay_jitter": {
+    "state": "present",
+    "value": {
+      "rms": 1.8e-16,
+      "how_determined": "Standard deviation of the interferometer error signal over the scan."
+    }
+  },
+  "delay_reference_point": {
+    "state": "present",
+    "value": "envelope_peak"
+  },
+  "delay_sign_convention": {
+    "state": "present",
+    "value": "xuv_minus_dressing"
+  },
+  "delay_value_uncertainty": {
+    "state": "present",
+    "value": [
+      2e-16,
+      2e-16,
+      2e-16,
+      2e-16,
+      2e-16
+    ]
+  },
+  "delay_values": {
+    "state": "present",
+    "value": [
+      -4e-15,
+      -2e-15,
+      0.0,
+      2e-15,
+      4e-15
+    ]
+  },
+  "delay_zero_definition": {
+    "state": "present",
+    "value": {
+      "condition": "Maximum of the sideband amplitude summed over the first sideband pair.",
+      "how_located": "Parabolic fit to the summed sideband amplitude against stage position."
+    }
+  },
+  "detection_direction": {
+    "state": "present",
+    "value": {
+      "frame": "laboratory, z along the beam, y vertical",
+      "components": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "detection_efficiency": {
+    "state": "present",
+    "value": {
+      "energies": [
+        20.0,
+        40.0,
+        60.0,
+        80.0
+      ],
+      "values": [
+        0.31,
+        0.29,
+        0.26,
+        0.22
+      ],
+      "how_determined": "Measured against a calibrated photodiode at four photon energies and interpolated."
+    }
+  },
+  "detector_angular_acceptance": {
+    "state": "present",
+    "value": {
+      "half_angle": 0.11,
+      "how_determined": "Aperture diameter and flight distance."
+    }
+  },
+  "detector_background": {
+    "state": "present",
+    "value": {
+      "subtracted": {
+        "what_was_subtracted": "A constant per-pixel dark level averaged over 500 shots with the XUV blocked.",
+        "how_obtained": "Recorded immediately before the scan under otherwise identical settings.",
+        "clipped_at_zero": false
+      },
+      "dark_count_rate": 0.004
+    }
+  },
+  "detector_dead_time": {
+    "state": "present",
+    "value": {
+      "value": 1.2e-08,
+      "pile_up_correction_applied": false,
+      "how_determined": "Manufacturer specification for the constant fraction discriminator."
+    }
+  },
+  "detector_noise_parameters": {
+    "state": "not_applicable"
+  },
+  "detector_saturation": {
+    "state": "present",
+    "value": {
+      "gain_behaviour": "Linear to 4000 counts per pixel per shot, compressing above it.",
+      "any_pixel_saturated": false,
+      "saturation_level": 4000.0
+    }
+  },
+  "detector_type": {
+    "state": "present",
+    "value": {
+      "kind": "time_of_flight",
+      "configuration": "0.5 m field-free drift, 300 V retardation, microchannel plate with a phosphor screen."
+    }
+  },
+  "dressing_carrier_envelope_phase": {
+    "state": "present",
+    "value": {
+      "stabilised": true,
+      "tagging": "single_value",
+      "value": 0.0
+    }
+  },
+  "dressing_centre_wavelength": {
+    "state": "present",
+    "value": 7.9e-07
+  },
+  "dressing_peak_intensity": {
+    "state": "estimated",
+    "value": {
+      "value": 4.2e+16,
+      "determination_method": "other"
+    }
+  },
+  "dressing_polarisation": {
+    "state": "present",
+    "value": {
+      "state": "linear",
+      "direction": {
+        "frame": "laboratory, z along the beam, y vertical",
+        "components": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "dressing_pulse_duration": {
+    "state": "present",
+    "value": {
+      "value": 5e-15,
+      "measure": "fwhm_intensity",
+      "how_determined": "Second harmonic frequency-resolved optical gating on a split-off arm."
+    }
+  },
+  "dressing_spectrum": {
+    "state": "present",
+    "value": {
+      "wavelengths": [
+        7e-07,
+        7.5e-07,
+        8e-07,
+        8.5e-07
+      ],
+      "spectral_intensities": [
+        0.12,
+        0.71,
+        1.0,
+        0.34
+      ]
+    }
+  },
+  "inter_scan_scatter": {
+    "state": "present",
+    "value": {
+      "statistic": "standard_deviation",
+      "scan_count": 12,
+      "how_computed": "Per-pixel standard deviation across the twelve scans that were summed."
+    }
+  },
+  "noise_model": {
+    "state": "present",
+    "value": "poisson_from_counts_and_shots"
+  },
+  "stage_to_delay_relation": {
+    "state": "not_applicable"
+  },
+  "subtracted_background_variance": {
+    "state": "present",
+    "value": {
+      "how_obtained": "Variance of the same 500 dark shots, per pixel, averaged over the array.",
+      "value": 0.0041
+    }
+  },
+  "uncertainty_array": {
+    "state": "present",
+    "value": {
+      "method": "poisson_from_counts",
+      "file": "uncertainty.bin",
+      "how_computed": "Square root of the summed counts per pixel, before any normalisation."
+    }
+  }
+}
