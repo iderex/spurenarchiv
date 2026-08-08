@@ -1,0 +1,30 @@
+{
+  "field": "detector_type",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "A reanalysis cannot know which distortions to look for, because a time-of-flight spectrometer with a microchannel plate, a magnetic bottle and a velocity map imaging spectrometer distort in different ways.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "kind",
+      "configuration"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "kind": {
+        "enum": [
+          "time_of_flight",
+          "magnetic_bottle",
+          "velocity_map_imaging",
+          "hemispherical",
+          "other"
+        ]
+      },
+      "configuration": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}

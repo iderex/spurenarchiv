@@ -1,0 +1,38 @@
+{
+  "field": "detection_efficiency",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "An efficiency that falls at low energy suppresses one side of the streaking modulation and biases the retrieved field, and no efficiency curve can be inferred from a single trace.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "energies",
+      "values",
+      "how_determined"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "energies": {
+        "type": "array",
+        "minItems": 2,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "values": {
+        "type": "array",
+        "minItems": 2,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "how_determined": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}

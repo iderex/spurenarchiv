@@ -1,0 +1,31 @@
+{
+  "field": "detector_noise_parameters",
+  "quantity": "none",
+  "requirement": "conditional",
+  "requiredWhen": "noise_model is detector_specific. Specified in docs/model/uncertainty.md.",
+  "withoutThisField": "The noise of a sensor with read noise and gain cannot be modelled at all, so the Poisson assumption is applied to data it does not describe and every uncertainty derived from it is wrong in an unknown direction.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "read_noise",
+      "gain",
+      "how_determined"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "read_noise": {
+        "type": "number",
+        "minimum": 0
+      },
+      "gain": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "how_determined": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}

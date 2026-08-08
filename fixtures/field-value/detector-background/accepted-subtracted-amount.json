@@ -1,0 +1,8 @@
+{
+  "subtracted": {
+    "what_was_subtracted": "A constant of 3.2 counts per bin, the mean of the 200 bins below the lowest kinetic energy in the scan.",
+    "how_obtained": "Mean over the pre-edge region of the same acquisition, computed before averaging the scans.",
+    "clipped_at_zero": false
+  },
+  "dark_count_rate": 0.4
+}

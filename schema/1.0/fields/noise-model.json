@@ -1,0 +1,13 @@
+{
+  "field": "noise_model",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "A reanalysis cannot say how far a retrieved pulse moves within the noise, which is the question archiving a raw trace exists to make answerable.",
+  "schema": {
+    "enum": [
+      "poisson_from_counts_and_shots",
+      "detector_specific",
+      "not_characterised"
+    ]
+  }
+}

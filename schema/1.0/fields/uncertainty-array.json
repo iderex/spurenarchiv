@@ -1,0 +1,34 @@
+{
+  "field": "uncertainty_array",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "A reanalyst cannot tell an estimated uncertainty from a measured one, and the two justify very different claims about how well a method fits the data.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "method",
+      "file"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "method": {
+        "enum": [
+          "poisson_from_counts",
+          "propagated_from_noise_model",
+          "measured_inter_scan_scatter",
+          "estimated"
+        ]
+      },
+      "file": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "how_computed": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}
