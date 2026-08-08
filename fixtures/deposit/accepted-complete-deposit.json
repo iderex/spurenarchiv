@@ -254,6 +254,76 @@
       ]
     }
   },
+  "energy_axis_quantity": {
+    "state": "present",
+    "value": "kinetic_energy"
+  },
+  "energy_calibration": {
+    "state": "present",
+    "value": {
+      "form": "flight_time_analytic",
+      "parameters": {
+        "flight_length": 0.5,
+        "time_zero": 1.4e-08,
+        "electron_mass_source": "CODATA 2022"
+      },
+      "retardation_voltage": 300.0,
+      "uncertainty": {
+        "value": 0.08,
+        "how_obtained": "Spread of the fitted photoline centre across the four calibration gases."
+      },
+      "description": "Kinetic energy from flight time by the field-free relation with a retarding stage, fitted on four known photolines."
+    }
+  },
+  "calibration_reference": {
+    "state": "present",
+    "value": {
+      "species": "Ne",
+      "transition": "2p photoline at 90 eV photon energy",
+      "accepted_value": 21.56,
+      "source": "NIST Atomic Spectra Database, ionisation energies, retrieved 2026-02-11."
+    }
+  },
+  "spectrometer_resolution": {
+    "state": "present",
+    "value": {
+      "energies": [
+        20.0,
+        50.0,
+        80.0
+      ],
+      "widths": [
+        0.18,
+        0.44,
+        0.71
+      ],
+      "measure": "fwhm",
+      "how_determined": "Width of the argon 3p photoline at three photon energies, deconvolved from the source bandwidth.",
+      "uncertainty": [
+        0.03,
+        0.05,
+        0.08
+      ]
+    }
+  },
+  "transmission_function": {
+    "state": "present",
+    "value": {
+      "energies": [
+        20.0,
+        40.0,
+        60.0,
+        80.0
+      ],
+      "values": [
+        1.0,
+        0.94,
+        0.86,
+        0.75
+      ],
+      "how_determined": "Ratio of measured to tabulated branching ratios across four photolines in one gas."
+    }
+  },
   "instrument": {
     "state": "present",
     "value": "Attosecond beamline, streaking end station, spectrometer arm B."

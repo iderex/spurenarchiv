@@ -1,0 +1,63 @@
+{
+  "field": "energy_calibration",
+  "quantity": "none",
+  "requirement": "conditional",
+  "requiredWhen": "energy_axis_quantity is kinetic_energy. Specified in docs/model/energy-calibration.md and argued in docs/decisions/conventions.md under kinetic energy against time of flight.",
+  "withoutThisField": "The conversion that produced the energies cannot be reproduced or undone, so an axis that is wrong is wrong permanently and every energy read off the trace carries an error nobody can bound.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "form",
+      "parameters",
+      "uncertainty"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "form": {
+        "enum": [
+          "flight_time_analytic",
+          "polynomial_in_flight_time",
+          "tabulated",
+          "other"
+        ]
+      },
+      "parameters": {
+        "type": "object"
+      },
+      "retardation_voltage": {
+        "type": "number"
+      },
+      "uncertainty": {
+        "oneOf": [
+          {
+            "const": "not_quantified"
+          },
+          {
+            "type": "object",
+            "required": [
+              "value",
+              "how_obtained"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": "number",
+                "minimum": 0
+              },
+              "how_obtained": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              }
+            }
+          }
+        ]
+      },
+      "description": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    }
+  }
+}

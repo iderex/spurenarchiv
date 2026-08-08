@@ -1,0 +1,54 @@
+{
+  "field": "spectrometer_resolution",
+  "quantity": "none",
+  "requirement": "optional",
+  "withoutThisField": "The instrument width cannot be separated from the width of the spectrum, so a retrieval attributes the spectrometer's own broadening to the pulse and reports a duration that is too long by an amount nobody can subtract.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "energies",
+      "widths",
+      "measure",
+      "how_determined"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "energies": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "widths": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "measure": {
+        "enum": [
+          "fwhm",
+          "rms",
+          "resolving_power"
+        ]
+      },
+      "how_determined": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "uncertainty": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}
