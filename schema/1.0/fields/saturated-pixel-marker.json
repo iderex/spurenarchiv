@@ -3,6 +3,7 @@
   "quantity": "none",
   "requirement": "conditional",
   "requiredWhen": "detector_saturation is stated and its any_pixel_saturated is true. Specified in docs/model/spectrogram.md.",
+  "publication": "published",
   "withoutThisField": "A deposit that has already admitted a saturated pixel gives no way to find one, so a compressed peak is fitted as though it were the true one and every parameter retrieved through it is biased.",
   "schema": {
     "type": "object",

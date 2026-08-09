@@ -2,6 +2,7 @@
   "field": "target_shells",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "A second band in the spectrogram cannot be identified with the shell that produced it, so it is either left unexplained or absorbed into the retrieved pulse as structure the field never had.",
   "schema": {
     "type": "array",

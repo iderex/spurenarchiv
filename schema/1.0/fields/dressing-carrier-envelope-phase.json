@@ -2,6 +2,7 @@
   "field": "dressing_carrier_envelope_phase",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "A trace averaged over an unstabilised carrier-envelope phase and analysed as a single-phase trace yields a systematically distorted pulse, and nothing in the array says which of the two it is.",
   "schema": {
     "type": "object",

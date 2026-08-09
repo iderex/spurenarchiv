@@ -2,6 +2,7 @@
   "field": "delay_reference_point",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "A retrieved delay cannot be compared with another laboratory's, because an axis referenced to the dressing field's intensity envelope peak and one referenced to a field maximum differ by up to half an optical cycle by an amount that depends on the carrier-envelope phase.",
   "schema": {
     "enum": [

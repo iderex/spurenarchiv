@@ -1,8 +1,8 @@
 {
-  "field": "near_miss_field",
+  "field": "local_field",
   "quantity": "none",
   "requirement": "required",
-  "publication": "published",
+  "publication": "local",
   "withoutThisField": "x",
   "schema": {
     "type": "string"

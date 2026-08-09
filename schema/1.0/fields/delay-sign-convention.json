@@ -2,6 +2,7 @@
   "field": "delay_sign_convention",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "The sign of the retrieved chirp cannot be determined, because the two conventions in use are mirror images of one another and no inspection of the array distinguishes them.",
   "schema": {
     "enum": [

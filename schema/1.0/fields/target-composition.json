@@ -2,6 +2,7 @@
   "field": "target_composition",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "A photoline from water or nitrogen in the gas line cannot be told from a feature of the target, so an unexplained band is available to be fitted as structure in the pulse.",
   "schema": {
     "type": "object",

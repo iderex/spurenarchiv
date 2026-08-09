@@ -2,6 +2,7 @@
   "field": "monitoring_channels",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "A source drift cannot be normalised out afterwards, so a reanalysis either assumes there was none or discards the scan, and the assumption is the one that gets made.",
   "schema": {
     "type": "array",

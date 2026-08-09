@@ -2,6 +2,7 @@
   "field": "subtracted_background_variance",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "The variance a background subtraction added cannot be given back, so every error bar in the low-count region is too small by an amount nobody can estimate.",
   "schema": {
     "type": "object",

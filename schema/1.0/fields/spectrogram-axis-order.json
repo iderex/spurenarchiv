@@ -2,6 +2,7 @@
   "field": "spectrogram_axis_order",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "A reader has to guess which index of the block runs over delay, and a guess that is wrong transposes the trace, which fails loudly on a rectangular scan and reconstructs to a plausible wrong duration on a square one.",
   "schema": {
     "type": "array",

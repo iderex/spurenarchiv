@@ -2,6 +2,7 @@
   "field": "delay_axis_quantity",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "A reanalysis cannot tell whether the stage relation has already been applied to the numbers or still has to be, so it either applies the geometry factor twice or not at all and the whole time axis is wrong by that factor.",
   "schema": {
     "enum": [

@@ -2,6 +2,7 @@
   "field": "delay_values",
   "quantity": "time",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "No column of the spectrogram has a time coordinate, so the streaking modulation cannot be fitted against delay and no duration, chirp or streaking amplitude can be retrieved at all.",
   "schema": {
     "type": "array",

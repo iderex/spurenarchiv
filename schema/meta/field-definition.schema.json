@@ -7,6 +7,7 @@
     "field",
     "quantity",
     "requirement",
+    "publication",
     "withoutThisField",
     "schema"
   ],
@@ -36,6 +37,13 @@
       "type": "string",
       "minLength": 1,
       "pattern": "\\S"
+    },
+    "publication": {
+      "description": "Whether this field travels with a copy of the dataset. published means it is inside the container and reaches every reanalyst, every benchmark export and every node an operator federates to, permanently. local means it stays on the host. docs/decisions/personal-data.md fixes the two words and which fields belong to which. Required here so that a field cannot land without the question having been answered; this schema cannot judge whether the answer is right, and a field marked published that is personal is refused by nothing.",
+      "enum": [
+        "published",
+        "local"
+      ]
     },
     "withoutThisField": {
       "description": "One sentence naming the reanalysis step that fails if the field is absent. Not a description of what the field means. This schema refuses an absent or blank one and cannot judge whether the sentence says what it is supposed to say.",

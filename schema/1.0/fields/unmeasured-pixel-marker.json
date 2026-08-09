@@ -2,6 +2,7 @@
   "field": "unmeasured_pixel_marker",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "A pixel that was never measured cannot be told from one measured as zero, so absent data enters a fit as a measurement of zero and pulls every parameter that depends on the region it sits in.",
   "schema": {
     "type": "object",

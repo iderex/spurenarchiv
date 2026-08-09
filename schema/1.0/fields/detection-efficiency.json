@@ -2,6 +2,7 @@
   "field": "detection_efficiency",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "An efficiency that falls at low energy suppresses one side of the streaking modulation and biases the retrieved field, and no efficiency curve can be inferred from a single trace.",
   "schema": {
     "type": "object",

@@ -92,7 +92,13 @@ jobs:
           refuse fixtures/field-definition/refused-absent-sentence.json
           refuse fixtures/field-definition/refused-blank-sentence.json
           refuse fixtures/field-definition/refused-conditional-without-condition.json
+          refuse fixtures/field-definition/refused-unmarked-publication.json
 
           # The near miss. One character says nothing useful and is accepted, so
           # the guard is proved to judge emptiness and nothing about meaning.
           accept fixtures/field-definition/accepted-shortest-sentence.json
+
+          # The near miss for the publication marking. A row marked local is
+          # accepted, so what the refusal above reaches is the key being absent
+          # and not one of the two answers being unwelcome.
+          accept fixtures/field-definition/accepted-local-marking.json
