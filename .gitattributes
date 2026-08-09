@@ -11,3 +11,11 @@
 # that are pinned beside them and the check would fail for a reason that has
 # nothing to do with the construction it judges.
 fixtures/content-address/** -text
+
+# The same reason again, for the deposits .github/workflows/deposit-manifest.yml
+# judges. Every file under this directory has its length and its digest recorded
+# in the manifest beside it, so a checkout that rewrote a line ending inside one
+# would make a fixture fail for a reason that has nothing to do with the rule it
+# exists to prove, and one of these fixtures exists to prove a length that is
+# wrong by 64 bytes.
+fixtures/manifest/** -text

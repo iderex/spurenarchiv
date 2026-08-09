@@ -11,22 +11,41 @@ sentence here may refer to the tool for the meaning of anything.
 What this document settles is the file set, the entry point, the manifest, the
 checksum, and what happens to a file that is on disk and not in the manifest or in
 the manifest and not on disk. What a dataset's metadata document contains is the
-model in `docs/model/`. What refuses a deposit that breaks a rule here is the
-validator in issue #32.
+model in `docs/model/`. What refuses a deposit somebody else sends is the
+validator in issue #32, and the next section says what does and does not refuse
+one today.
 
-## Nothing here is refused by anything today
+## What refuses a rule in this document, and what does not
 
-Said first, because a specification is easy to read as a guarantee. There is no
-validator in this tree:
+Said first, because a specification is easy to read as a guarantee.
 
-    git ls-tree -r --name-only 343f3a1 -- tool/ | wc -l
+The manifest as a document is refused by `schema/1.0/manifest.schema.json`, which
+is the normative artefact `docs/decisions/layout.md` requires and which
+`docs/decisions/schema-language.md` named this document as the source of. A schema
+sees one document, so it decides the keys, the shape of an entry, the form of a
+path and the form of a digest, and it decides nothing that needs another file
+opened. The rules it cannot reach are listed by name in its `deferred_checks`
+array rather than left to be inferred from its silence.
+
+Those are decided by `.github/workflows/deposit-manifest.yml`, which reads a
+deposit directory, compares it against its manifest and names the path in every
+refusal. Each refusal below has a fixture under `fixtures/manifest/` that trips
+it, and the accepted fixtures beside them are what stops a rule reaching past what
+it names.
+
+None of that is a validator, and the difference is the whole of what a depositor
+has. That check judges fixture deposits inside this repository. There is nothing
+here anybody can point at a directory of their own:
+
+    git ls-files -- tool/ | wc -l
     0
 
-So every "is refused" below states what a conforming validator does, not what
-something currently does. The refusals and the fixture behind each one are issues
-#32 and #33. Until they land, a deposit that breaks every rule in this document
-lands exactly as quietly as one that keeps them, and this document is what a
-reader has instead of a guard.
+So a real deposit that breaks every rule in this document still lands exactly as
+quietly as one that keeps them, and a depositor still finds out from somebody else
+rather than from their own machine. That is issue #32, with the check a depositor
+runs in #57. What has changed is narrower and is worth stating exactly: every rule
+below is now decidable rather than prose, and each has been observed refusing the
+deposit it names.
 
 ## A deposit is a directory
 
@@ -146,7 +165,10 @@ change a file that nobody edited.
 
 It carries the schema version it is written against, the number of files it lists,
 and one entry per file. An entry carries the path, the size in bytes, the digest,
-and the role that file plays.
+and the role that file plays. `schema/1.0/manifest.schema.json` is the normative
+form of all of that, and the shape below is the same thing written to be read.
+Where the two disagree the schema is what a deposit is judged against, which is
+the rule `docs/decisions/layout.md` sets for every pair like this one.
 
     {
       "schema_version": "1.0",
@@ -246,6 +268,9 @@ deposit that lost its metadata document during a copy must fail on inspection
 rather than read as a deposit with no metadata, and a deposit that lost one array
 out of forty must fail rather than read as a deposit with thirty-nine.
 
+`fixtures/manifest/refused-listed-file-missing` is a deposit whose delay axis did
+not arrive and whose manifest still lists it.
+
 ## A file whose bytes do not match
 
 Refused, naming the path.
@@ -259,6 +284,12 @@ reported as a digest mismatch, which is a different thing that happened.
 Neither is a warning. `docs/decisions/raw-counts.md` and the validator in issue
 #32 both rest on counts being the numbers the detector reported, and a file that
 does not match its digest is a file whose numbers are not known to be those.
+
+The two are a fixture each, because one message standing in for both is the
+outcome this section is written against.
+`fixtures/manifest/refused-truncated-array` is short by 64 bytes.
+`fixtures/manifest/refused-digest-mismatch` is the right length with one bit of
+one value changed.
 
 ## A file on disk and not in the manifest
 
@@ -290,6 +321,13 @@ about: an ignore list is a set of names that are invisible to the check, and a
 name is a cheap thing for an unwanted file to have. A refusal that names the file
 is something a depositor fixes in one command. An exemption is something nobody
 revisits.
+
+`fixtures/manifest/refused-unlisted-file` carries the superseded copy this section
+describes, and `fixtures/manifest/accepted-auxiliary-listed` carries an extra file
+that is listed. The second is what keeps the rule to unlisted rather than extra: a
+rule refusing anything outside a dataset directory would refuse the auxiliary
+material `docs/decisions/dataset-unit.md` admits, and it would pass every fixture
+the first one does.
 
 ## Reading a deposit with nothing installed
 
@@ -351,15 +389,17 @@ section that was wrong.
 The metadata document's keys, which are the model in `docs/model/` and the schema
 in `schema/`.
 
-`schema/1.0/manifest.schema.json`, which `docs/decisions/schema-language.md` names
-as the manifest's schema and which does not exist:
+What the deposit level carries above the manifest.
+`docs/decisions/schema-language.md` names `schema/1.0/deposit.schema.json` for
+what `docs/decisions/dataset-unit.md` made addressable, and it is not in the tree:
 
-    git ls-tree -r --name-only 343f3a1 -- schema/ | grep -v '/fields/'
-    schema/meta/field-definition.schema.json
+    git ls-files -- 'schema/*/deposit.schema.json' | wc -l
+    0
 
-Until it lands, the shape above is prose and the normative artefact
-`docs/decisions/layout.md` names for what is refused has nothing in it about a
-manifest.
+Nothing in this document depends on it. A manifest is a claim about files and the
+deposit level is a claim about datasets, and the second is where a deposit says
+which of its directories are datasets rather than leaving a reader to infer it
+from the presence of a `metadata.json`.
 
 How a deposit is laid out inside an operator's store, which is issue #47 and is a
 different question: this document is about the deposit as it arrives and as it is
