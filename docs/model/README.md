@@ -71,6 +71,32 @@ the quantities would put the list in a third place and drift against the record
 in exactly the way this section exists to avoid, so what catches an invented
 quantity is a person reading the row against the record.
 
+## What travels with a copy
+
+A row says whether the field is inside the container. `publication` is
+`published` or `local`, and it is required, so a field cannot land in the model
+without the question having been answered.
+
+The two words are `docs/decisions/personal-data.md`'s and mean what that record
+says. `published` means the field travels with every copy of the dataset, which
+is a reanalyst's disk, a benchmark export and any node an operator federates to,
+and no later deletion reaches those copies. `local` means it stays on the host.
+Every row in the model today is `published`, because every field in it is a
+measurement, and the record puts what the archive knows about a person in a
+separate store rather than in the container.
+
+The marking is on the row rather than in a list beside the schema, for the reason
+`docs/decisions/absence.md` gives about parallel structures: a list can disagree
+with the thing it describes and can be dropped by a writer that never heard of
+it.
+
+What is refused is an absent marking. Whether the answer is right is not
+decidable here, and a field marked `published` that carries something personal
+passes every check in this tree, which is the residual and not an oversight.
+Issue #73 carries the other half, which is the outbound paths filtering on the
+marking and the default a path applies to a field whose marking it cannot read.
+Neither exists yet.
+
 ## Where a row lives
 
 One field is one file: `schema/<version>/fields/<name>.json`.

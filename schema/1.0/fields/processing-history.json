@@ -2,6 +2,7 @@
   "field": "processing_history",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "Nothing says whether the array is what the detector produced, so a smoothed trace and a raw one are read the same way and the width of the first is partly an artefact nobody can subtract.",
   "schema": {
     "type": "array",

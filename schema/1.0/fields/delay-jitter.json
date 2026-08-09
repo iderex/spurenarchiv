@@ -2,6 +2,7 @@
   "field": "delay_jitter",
   "quantity": "time",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "Shot-to-shot timing jitter cannot be separated from a genuinely longer pulse, which is the systematic that makes measured durations disagree between laboratories.",
   "schema": {
     "type": "object",

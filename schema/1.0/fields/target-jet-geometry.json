@@ -2,6 +2,7 @@
   "field": "target_jet_geometry",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "The interaction volume cannot be estimated, so a density quoted at the nozzle cannot be turned into the density the detected electrons came from and the space-charge assessment has no length to work with.",
   "schema": {
     "type": "object",

@@ -2,6 +2,7 @@
   "field": "inter_scan_scatter",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "The scatter between repeated scans is destroyed when they are averaged, and it is worth more than any noise model because it was measured rather than assumed.",
   "schema": {
     "type": "object",

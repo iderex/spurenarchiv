@@ -2,6 +2,7 @@
   "field": "detector_type",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "A reanalysis cannot know which distortions to look for, because a time-of-flight spectrometer with a microchannel plate, a magnetic bottle and a velocity map imaging spectrometer distort in different ways.",
   "schema": {
     "type": "object",

@@ -2,6 +2,7 @@
   "field": "acquisition_order",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "A slow drift cannot be told from a chirp, because a scan taken monotonically puts the drift onto the delay axis as a linear phase and nothing in the array distinguishes the two.",
   "schema": {
     "type": "object",

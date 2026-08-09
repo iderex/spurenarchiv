@@ -2,6 +2,7 @@
   "field": "delay_value_uncertainty",
   "quantity": "time",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "The uncertainty a reanalysis quotes on a retrieved duration cannot carry the contribution of the axis itself, so the result is stated more precisely than the measurement supports.",
   "schema": {
     "type": "array",

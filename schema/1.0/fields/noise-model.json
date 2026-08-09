@@ -2,6 +2,7 @@
   "field": "noise_model",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "A reanalysis cannot say how far a retrieved pulse moves within the noise, which is the question archiving a raw trace exists to make answerable.",
   "schema": {
     "enum": [

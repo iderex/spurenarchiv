@@ -3,6 +3,7 @@
   "quantity": "none",
   "requirement": "conditional",
   "requiredWhen": "energy_axis_quantity is kinetic_energy. Specified in docs/model/energy-calibration.md and argued in docs/decisions/conventions.md under kinetic energy against time of flight.",
+  "publication": "published",
   "withoutThisField": "The conversion that produced the energies cannot be reproduced or undone, so an axis that is wrong is wrong permanently and every energy read off the trace carries an error nobody can bound.",
   "schema": {
     "type": "object",

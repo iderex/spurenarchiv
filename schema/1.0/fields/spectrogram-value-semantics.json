@@ -2,6 +2,7 @@
   "field": "spectrogram_value_semantics",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "Nothing says what one pixel holds, so counting statistics are unavailable and a spectrum stored as a density cannot be told from one stored per bin, which is the difference between a peak with the right shape and one with the wrong shape.",
   "schema": {
     "type": "object",

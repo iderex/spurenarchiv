@@ -2,6 +2,7 @@
   "field": "energy_axis_quantity",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "A reanalysis cannot tell whether the second axis is already a kinetic energy or still a time of flight, so it either converts an axis that was converted or reads flight times as energies, and both give a spectrum with plausible numbers and the wrong shape.",
   "schema": {
     "enum": [

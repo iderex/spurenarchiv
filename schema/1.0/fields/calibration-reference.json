@@ -2,6 +2,7 @@
   "field": "calibration_reference",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "Nothing says which accepted number the energy axis was pinned to, so two deposits calibrated against two published values of the same photoline disagree by that difference and neither says so.",
   "schema": {
     "type": "object",

@@ -2,6 +2,7 @@
   "field": "detector_background",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "A subtracted background cannot be added back if the amount was never recorded, and a subtraction that went slightly negative and was clipped at zero has destroyed the Poisson statistics of the whole low-count region with nothing in the array to show it.",
   "schema": {
     "type": "object",

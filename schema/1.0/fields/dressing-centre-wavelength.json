@@ -2,6 +2,7 @@
   "field": "dressing_centre_wavelength",
   "quantity": "length",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "The optical period of the dressing field is unknown, so the streaking shift cannot be related to the vector potential and a reconstruction has no field frequency to assume.",
   "schema": {
     "type": "number",

@@ -2,6 +2,7 @@
   "field": "dressing_polarisation",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "The projection of the momentum shift onto the detection direction cannot be formed, so neither the sign nor the amplitude of the observed streaking can be predicted from the field.",
   "schema": {
     "type": "object",

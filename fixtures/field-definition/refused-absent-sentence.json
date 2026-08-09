@@ -2,6 +2,7 @@
   "field": "absent_sentence_field",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "schema": {
     "type": "string"
   }

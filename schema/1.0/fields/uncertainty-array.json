@@ -2,6 +2,7 @@
   "field": "uncertainty_array",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "A reanalyst cannot tell an estimated uncertainty from a measured one, and the two justify very different claims about how well a method fits the data.",
   "schema": {
     "type": "object",

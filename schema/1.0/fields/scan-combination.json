@@ -2,6 +2,7 @@
   "field": "scan_combination",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "An averaged trace is read as a single measurement, so a width broadened by combining scans taken hours apart under a moving delay zero is reported as the duration of the pulse.",
   "schema": {
     "type": "object",

@@ -2,6 +2,7 @@
   "field": "spectrogram",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "Nothing says which file holds the measurement, how many delay points and energy bins it has, or how to turn its bytes into numbers, so the array cannot be read at all and no reanalysis starts.",
   "schema": {
     "type": "object",

@@ -2,6 +2,7 @@
   "field": "detector_saturation",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "A saturated pixel cannot be told from a genuinely flat maximum, so a reanalysis fits a compressed peak as though it were the true one.",
   "schema": {
     "type": "object",

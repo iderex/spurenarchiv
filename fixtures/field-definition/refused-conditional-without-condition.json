@@ -2,6 +2,7 @@
   "field": "conditional_field",
   "quantity": "none",
   "requirement": "conditional",
+  "publication": "published",
   "withoutThisField": "A reanalysis cannot convert the energy axis without the calibration that produced it.",
   "schema": {
     "type": "string"

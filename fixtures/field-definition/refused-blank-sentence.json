@@ -2,6 +2,7 @@
   "field": "blank_sentence_field",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": " \t ",
   "schema": {
     "type": "string"

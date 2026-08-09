@@ -2,6 +2,7 @@
   "field": "converter",
   "quantity": "none",
   "requirement": "required",
+  "publication": "published",
   "withoutThisField": "The deposits a converter touched cannot be listed when that converter is found to have misread a field, so a discovered misread becomes an announcement that some unknown part of the archive is wrong.",
   "schema": {
     "type": "object",

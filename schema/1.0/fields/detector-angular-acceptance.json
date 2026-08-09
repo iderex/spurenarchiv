@@ -2,6 +2,7 @@
   "field": "detector_angular_acceptance",
   "quantity": "none",
   "requirement": "optional",
+  "publication": "published",
   "withoutThisField": "How much of the angular distribution is averaged into each pixel is unknown, so a streaking amplitude reduced by angular averaging is read as a smaller field.",
   "schema": {
     "type": "object",
