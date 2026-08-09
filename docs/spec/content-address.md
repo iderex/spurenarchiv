@@ -199,3 +199,8 @@ a retraction or a withdrawal, which is `identity.md` and issue #39.
 The registered persistent identifier, which is
 `docs/decisions/persistent-identifier.md` and is a pointer to these values rather
 than a value of this kind.
+
+The form a person writes into a manuscript and types back in, which is
+`docs/spec/identifier.md`. It is a rendering of the version digest above and not a
+second identity: the digests here are what a store matches on and what a depositor
+recomputes, and that document says so in its own words.
