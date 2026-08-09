@@ -1,0 +1,2 @@
+Fixture auxiliary file. A line from an acquisition log, listed in the
+manifest with the auxiliary role and never read as measurement.

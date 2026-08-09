@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "A deposit's manifest, schema version 1.0",
+  "description": "The document at the root of a deposit that says which files the deposit consists of. docs/spec/deposit-layout.md is the prose this is the normative form of, and docs/decisions/layout.md is why the schema and not the prose decides what is refused. What this schema judges is the manifest as a document: its keys, the shape of an entry, the form of a path and of a digest. What it cannot judge is everything that requires opening another file, because a schema sees one document and a manifest is a claim about a directory; those are listed in deferred_checks and are why a manifest that validates here is not yet a manifest that matches its deposit.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "file_count",
+    "files"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "description": "The version of this schema the manifest is written against. A string rather than a number, for the reason docs/decisions/schema-language.md gives: 1.10 and 1.1 are one JSON number and two schema versions.",
+      "const": "1.0"
+    },
+    "file_count": {
+      "description": "The number of files listed. docs/decisions/dataset-unit.md requires it beside the per-file checksums. It catches a files array that lost entries to something that was not parsing the document, and it is not a defence against anybody who edited the manifest, who could decrement it.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "files": {
+      "description": "One entry per file in the deposit, except manifest.json itself, which cannot carry its own digest. A deposit with no files is not a deposit.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    }
+  },
+  "$defs": {
+    "entry": {
+      "description": "What one file is claimed to be: where it sits, how long it is, what its bytes hash to, and which of the three kinds of file it is.",
+      "type": "object",
+      "required": [
+        "path",
+        "size",
+        "digest",
+        "role"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/path"
+        },
+        "size": {
+          "description": "The length of the file in bytes. Compared before the digest, because it is cheap where a digest is a full read and because truncation is what a size mismatch usually is.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "role": {
+          "description": "What kind of file this is, which is what a reader dispatches on. Coarse on purpose and not the role an array plays in the measurement, which comes from the metadata document: the manifest asks what kind of file this is, the metadata asks what this array is.",
+          "enum": [
+            "dataset_metadata",
+            "array",
+            "auxiliary"
+          ]
+        }
+      }
+    },
+    "path": {
+      "description": "Where the file sits, relative to the deposit root, with / as the separator. The character set is narrower than any filesystem requires so that a deposit written on one system and read on another arrives intact. No . or .. component, because a reader that resolved ../ out of a deposit is a reader an untrusted deposit can steer, and this format is read on machines belonging to people who did not write the deposit. Not manifest.json, because a document cannot carry the digest of the bytes that carry the digest.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$",
+      "not": {
+        "anyOf": [
+          {
+            "pattern": "(^|/)[.][.]?(/|$)"
+          },
+          {
+            "const": "manifest.json"
+          }
+        ]
+      }
+    },
+    "digest": {
+      "description": "The SHA-256 of the file's bytes, all of them, lowercase hexadecimal with the algorithm in front of it. docs/decisions/identity.md decides the algorithm and the prefix; the prefix is what lets a second algorithm arrive later without any stored digest becoming ambiguous about which one produced it.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "deferred_checks": [
+    {
+      "id": "file-count-equals-the-number-of-entries",
+      "cannot": "compares two values",
+      "specified_in": "docs/spec/deposit-layout.md",
+      "refusal": "file_count and the length of files disagree."
+    },
+    {
+      "id": "no-path-is-listed-twice",
+      "cannot": "compares an entry against every other entry",
+      "specified_in": "docs/spec/deposit-layout.md",
+      "refusal": "a path is listed more than once, so two entries claim one file."
+    },
+    {
+      "id": "every-listed-file-is-on-disk",
+      "cannot": "reads a file outside the document",
+      "specified_in": "docs/spec/deposit-layout.md",
+      "refusal": "a file the manifest lists is not in the deposit."
+    },
+    {
+      "id": "every-file-has-the-length-its-entry-states",
+      "cannot": "reads a file outside the document",
+      "specified_in": "docs/spec/deposit-layout.md",
+      "refusal": "a file is a different length from its entry, which is what a truncated transfer looks like."
+    },
+    {
+      "id": "every-file-hashes-to-the-digest-its-entry-states",
+      "cannot": "reads a file outside the document",
+      "specified_in": "docs/spec/deposit-layout.md",
+      "refusal": "a file's bytes do not hash to its entry's digest."
+    },
+    {
+      "id": "no-file-on-disk-is-unlisted",
+      "cannot": "reads the directory the document sits in",
+      "specified_in": "docs/spec/deposit-layout.md",
+      "refusal": "a file in the deposit is named by no entry, so the deposit on disk and the deposit in the manifest are different objects."
+    },
+    {
+      "id": "the-manifest-is-utf-8-with-line-feeds-and-no-byte-order-mark",
+      "cannot": "reads the bytes of the document rather than its values",
+      "specified_in": "docs/spec/deposit-layout.md",
+      "refusal": "the manifest's encoding is not the one a transfer must not have changed."
+    }
+  ]
+}

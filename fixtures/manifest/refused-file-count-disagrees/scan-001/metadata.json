@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "note": "A fixture metadata document. It is not a conforming deposit; what it exists for is being a file the manifest names.",
+  "arrays": {
+    "spectrogram": {
+      "path": "scan-001/spectrogram.bin",
+      "shape": [4, 8],
+      "element_type": "float64",
+      "byte_order": "little",
+      "index_order": ["delay", "energy"]
+    },
+    "delay_axis": {
+      "path": "scan-001/delay-axis.bin",
+      "shape": [4],
+      "element_type": "float64",
+      "byte_order": "little"
+    }
+  }
+}

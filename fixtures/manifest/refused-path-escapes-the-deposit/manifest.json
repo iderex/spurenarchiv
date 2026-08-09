@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "file_count": 3,
+  "files": [
+    {
+      "path": "scan-001/metadata.json",
+      "size": 524,
+      "digest": "sha256:55331316ab5f642dee0d132bcb468c5b479e160dc14740dc93784e818f91b0bf",
+      "role": "dataset_metadata"
+    },
+    {
+      "path": "scan-001/spectrogram.bin",
+      "size": 256,
+      "digest": "sha256:bfb0016ef66799b3cd7a3d9fefe4b7756a718f466399ccaacc2b39ed4dd0714e",
+      "role": "array"
+    },
+    {
+      "path": "../scan-001/delay-axis.bin",
+      "size": 32,
+      "digest": "sha256:777ebbfac8d004d2ea08dcc719bb2df2fb7d92b35bfc5eb4b0e8e8a700a32654",
+      "role": "array"
+    }
+  ]
+}

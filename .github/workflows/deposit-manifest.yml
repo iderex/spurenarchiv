@@ -1,0 +1,242 @@
+# A deposit against its manifest (#31). docs/spec/deposit-layout.md says what a
+# conforming validator refuses; schema/1.0/manifest.schema.json is the normative
+# form of the manifest as a document, which docs/decisions/layout.md requires;
+# this is the machine that judges both against bytes on disk.
+#
+# What it judges is fixture deposits in this repository. It is not the validator
+# a depositor runs before sending anything, which is issue #32, and nothing here
+# reaches a deposit outside this tree. What it settles is that the rules in the
+# specification are decidable and that each one refuses the deposit it names,
+# with the path in the message, rather than being prose nobody has run.
+#
+# The three cases the issue asks for are a truncated array, a file the manifest
+# lists that is not there, and a file that is there and no entry names. The third
+# is the one nothing else in the design can see: docs/decisions/identity.md
+# builds the measurement digest from a listing of roles rather than of file
+# names, so a superseded copy of a corrected array, named by nothing, moves no
+# digest and contradicts no metadata document. The manifest is the only artefact
+# that states the file set is complete, and this is where that statement is
+# shown to bite.
+#
+# The judgement is one shell function and the fixtures are judged by calling it,
+# rather than by a second copy of the rules written for the fixtures. It reads a
+# directory and prints what it found, so the code that judges a fixture is the
+# code that judges anything else handed to it.
+name: deposit-manifest
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+# Read-only: the check reads the tracked tree and hashes it.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  manifest:
+    name: A deposit against its manifest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      CASES: fixtures/manifest
+      # Pinned for the reason dataset-schema.yml pins: a validator that changes
+      # under the tree changes the verdict with no commit here.
+      CJS_VERSION: "0.37.4"
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # No step pushes via git, so do not persist the GITHUB_TOKEN.
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+
+      - name: Judge every fixture deposit against its manifest, and assert the verdict its name claims
+        run: |
+          set -euo pipefail
+
+          # The judgement.
+          #
+          #   $1  the deposit directory
+          #
+          # Every line it prints about a refusal carries the path the refusal is
+          # about, because a depositor acts on a path and not on a rule name.
+          # It returns non-zero when the deposit is refused.
+          judge() {
+            deposit=${1%/}
+            verdict=0
+            work=$(mktemp -d)
+
+            manifest="$deposit/manifest.json"
+            if [ ! -f "$manifest" ]; then
+              echo "refuse ${deposit}/manifest.json: there is no manifest at the root of this directory, so it is not a deposit. A reader does not fall back to walking the directory for anything that looks like a dataset."
+              return 1
+            fi
+
+            # The version comes out of the manifest, because a manifest is
+            # judged against the version it declares and never against the
+            # newest one in the tree.
+            version=$(jq -r '.schema_version // empty' "$manifest" 2>/dev/null || true)
+            if [ -z "$version" ]; then
+              echo "refuse ${manifest}: this manifest declares no schema_version, so nothing decides which schema it is judged against."
+              return 1
+            fi
+            schema="schema/${version}/manifest.schema.json"
+            if [ ! -f "$schema" ]; then
+              echo "refuse ${manifest}: this manifest declares schema version ${version} and ${schema} is not in the tree."
+              return 1
+            fi
+
+            # The document first. Everything below reads values out of it, so a
+            # manifest whose shape is wrong is refused before anything is read
+            # out of it as though it were right.
+            if ! uvx --no-build "check-jsonschema@${CJS_VERSION}" --schemafile "$schema" "$manifest" > "$work/schema-report" 2>&1; then
+              echo "refuse ${manifest}: refused by ${schema}."
+              sed 's/^/       /' "$work/schema-report"
+              return 1
+            fi
+
+            listed=$(jq -r '.files | length' "$manifest")
+            stated=$(jq -r '.file_count' "$manifest")
+            if [ "$listed" -ne "$stated" ]; then
+              echo "refuse ${manifest}: file_count says ${stated} and files holds ${listed} entries. One of the two lost something that was not parsing this document."
+              verdict=1
+            fi
+
+            jq -r '.files[].path' "$manifest" | LC_ALL=C sort > "$work/listed"
+            LC_ALL=C sort -u "$work/listed" > "$work/listed-once"
+            if [ "$(wc -l < "$work/listed")" -ne "$(wc -l < "$work/listed-once")" ]; then
+              LC_ALL=C uniq -d "$work/listed" | while IFS= read -r path; do
+                echo "refuse ${deposit}/${path}: listed more than once, so two entries claim one file."
+              done
+              verdict=1
+            fi
+
+            # Size before digest. Both are in the manifest, the size is cheap
+            # where the digest is a full read, and truncation is worth naming in
+            # its own words because truncation is what it usually is.
+            while IFS="$(printf '\t')" read -r path size digest; do
+              file="$deposit/$path"
+              if [ ! -f "$file" ]; then
+                echo "refuse ${file}: listed in the manifest and not in the deposit. A deposit that lost a file during a copy fails here rather than reading as a deposit that never had it."
+                verdict=1
+                continue
+              fi
+              actual_size=$(stat -c %s "$file")
+              if [ "$actual_size" -ne "$size" ]; then
+                echo "refuse ${file}: the manifest says ${size} bytes and the file is ${actual_size}. A short file is a transfer that stopped."
+                verdict=1
+                continue
+              fi
+              actual_digest="sha256:$(sha256sum "$file" | cut -d ' ' -f 1)"
+              if [ "$actual_digest" != "$digest" ]; then
+                echo "refuse ${file}: the bytes hash to ${actual_digest} and the manifest says ${digest}. The length is right, so this is not a truncation."
+                verdict=1
+              fi
+            done < <(jq -r '.files[] | [.path, .size, .digest] | @tsv' "$manifest")
+
+            # The other direction, over the whole deposit, recursively, with no
+            # exclusions. There is no ignore list and no exemption for hidden
+            # files: a name is a cheap thing for an unwanted file to have, and an
+            # exemption is something nobody revisits.
+            ( cd "$deposit" && find . -type f -print ) \
+              | sed 's|^\./||' \
+              | LC_ALL=C sort > "$work/every-file"
+            # The manifest is the one file no entry names, because a document
+            # cannot carry the digest of the bytes that carry the digest. The
+            # grep is allowed to match nothing: a directory holding only a
+            # manifest has no files to compare and is refused a line further
+            # down for listing files that are not there.
+            grep -v '^manifest\.json$' "$work/every-file" > "$work/on-disk" || true
+            LC_ALL=C comm -23 "$work/on-disk" "$work/listed-once" > "$work/unlisted"
+            while IFS= read -r path; do
+              [ -n "$path" ] || continue
+              echo "refuse ${deposit}/${path}: in the deposit and named by no entry. This is how a superseded copy of a corrected array survives, and nothing else in the format can see it."
+              verdict=1
+            done < "$work/unlisted"
+
+            if [ "$verdict" -eq 0 ]; then
+              echo "accept ${deposit}: ${listed} listed file(s), each present, the stated length and the stated digest, and nothing else in the directory."
+            fi
+            return "$verdict"
+          }
+
+          # What each refusal has to be a refusal for. Without this a fixture
+          # broken in some unrelated way would still be refused, and the run
+          # would report a rule biting that was never reached.
+          reason_for() {
+            case "$1" in
+              refused-listed-file-missing)
+                echo "refused-listed-file-missing/scan-001/delay-axis.bin: listed in the manifest and not in the deposit" ;;
+              refused-truncated-array)
+                echo "refused-truncated-array/scan-001/spectrogram.bin: the manifest says 256 bytes and the file is 192" ;;
+              refused-unlisted-file)
+                echo "refused-unlisted-file/scan-001/spectrogram-superseded.bin: in the deposit and named by no entry" ;;
+              refused-digest-mismatch)
+                echo "refused-digest-mismatch/scan-001/spectrogram.bin: the bytes hash to sha256:99822ddd3e18924cfbab79af158d06a930513977a4c2b62661dccfbd77a2eb0d" ;;
+              refused-file-count-disagrees)
+                echo "file_count says 4 and files holds 3 entries" ;;
+              refused-manifest-lists-itself)
+                echo "\$.files[3].path: 'manifest.json' should not be valid" ;;
+              refused-path-escapes-the-deposit)
+                echo "\$.files[2].path: '../scan-001/delay-axis.bin' should not be valid" ;;
+              *)
+                echo "" ;;
+            esac
+          }
+
+          report=$(mktemp)
+          examined=0
+          for deposit in "$CASES"/*/; do
+            name=$(basename "$deposit")
+            case "$name" in
+              accepted-*)
+                if ! judge "$deposit" > "$report" 2>&1; then
+                  echo "::error file=${CASES}/${name}::This deposit exists to be accepted and was refused, so a rule here is reaching past what it names."
+                  cat "$report"
+                  exit 1
+                fi
+                sed 's/^/        /' "$report"
+                ;;
+              refused-*)
+                if judge "$deposit" > "$report" 2>&1; then
+                  echo "::error file=${CASES}/${name}::This deposit exists to be refused and was accepted. The rule this fixture names is no longer biting."
+                  cat "$report"
+                  exit 1
+                fi
+                reason=$(reason_for "$name")
+                if [ -z "$reason" ]; then
+                  echo "::error file=${CASES}/${name}::No expected refusal is recorded for this fixture, so its refusal proves nothing in particular. Add it to reason_for in this workflow."
+                  exit 1
+                fi
+                if ! grep -qF -- "$reason" "$report"; then
+                  echo "::error file=${CASES}/${name}::Refused, but not for the reason this fixture exists to prove. Expected the report to contain: ${reason}"
+                  cat "$report"
+                  exit 1
+                fi
+                sed 's/^/        /' "$report"
+                ;;
+              *)
+                echo "::error file=${CASES}/${name}::A fixture deposit is named accepted-... or refused-.... This one says neither, so nothing decides what its verdict should be."
+                exit 1
+                ;;
+            esac
+            examined=$((examined + 1))
+          done
+
+          echo "Judged ${examined} fixture deposit(s) under ${CASES}."
+
+          # This step exists only to run fixtures, so a run that found none is a
+          # broken check and not a clean tree.
+          if [ "$examined" -eq 0 ]; then
+            echo "::error::No fixture deposits were found, so nothing above was checked."
+            exit 1
+          fi
