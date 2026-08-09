@@ -65,6 +65,21 @@ angles relative to something a sentence describes.
 **Counts and shots.** Integers, dimensionless, exactly as `raw-counts.md`
 requires. Not a floating point number that happens to hold an integer.
 
+**Number density.** Inverse cubic metres. The density of the target in the
+interaction region is a count per volume, and it is stored as one because the
+reason it is archived at all is a space-charge estimate, which needs a number per
+volume and a volume. Particles per cubic centimetre is a permitted declared unit
+on the way in and the factor of a million is exact.
+
+**Pressure.** Pascals. Nothing in the model carries a pressure today, and the
+quantity is named here so that the first field to carry one has no choice left to
+make in the row that introduces it. A backing pressure is not a number density
+written another way, because what arrives in the interaction region depends on
+the nozzle, the distance and the expansion. A depositor who has the pressure and
+not the density states the density as an estimate with the pressure and the
+geometry as its basis, which is what `docs/model/target.md` already says about
+that field.
+
 ## The sign of the delay, and why it is a subtraction rather than a convention
 
 The internal delay is defined as a subtraction that is written down:

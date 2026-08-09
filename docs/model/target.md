@@ -82,15 +82,10 @@ setups have and an in-situ measurement is what few have. That is the state to
 use, with the basis `absence.md` requires beside it, rather than a number that
 reads as measured.
 
-Both quantities depart from what `conventions.md` names, and the departure is
-stated here rather than left to be found. That record fixes SI as the internal
-system and then names time, energy, length, intensity, direction, and counts and
-shots individually. It does not name a number density, so `number_density` as the
-row's `quantity` follows from the record's general rule and not from a line in
-its table, and the unit is inverse cubic metres by the same route. Interaction
-length and nozzle diameter are lengths and are metres, which the record does
-name. Issue #99 asks that record to name the quantity so a reader is not deriving
-it here.
+`conventions.md` names both quantities and fixes their internal representation, a
+number density in inverse cubic metres and a length in metres, so the unit
+follows from the row's `quantity` through that record. Interaction length and
+nozzle diameter are lengths.
 
 ## Resonances, and the phase that is not the pulse's
 
