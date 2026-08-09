@@ -55,6 +55,12 @@ that says nothing about the subtraction at all, and the fixtures under
 `fixtures/field-value/detector-background/` prove both directions, that `none` is
 accepted and that silence is not.
 
+Those three judge the value on its own. `fixtures/deposit/refused-background-unstated.json`
+is the same silence inside a whole document, so the refusal reaching a deposit is
+proved rather than inferred from the refusal reaching a value. It carries a dark
+count rate, because that is what a depositor writes when they answer the question
+about the detector instead of the question about the array.
+
 The reason this one is required while the three above are optional is that a
 background is almost always subtracted and almost never recorded. A subtracted
 background cannot be added back if the amount was never written down. Worse, a

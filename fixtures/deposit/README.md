@@ -36,6 +36,8 @@ never reached.
 | `accepted-processed-without-shots.json` | the same, at `completeness_level` `processed` | accepted |
 | `refused-unstated-processing-history.json` | `processing_history` carrying `not_recorded` | refused, naming the state |
 | `accepted-processing-history-with-an-undescribed-step.json` | `processing_history` carrying a subtraction and one undescribed step | accepted |
+| `refused-background-unstated.json` | `detector_background` carrying a dark count rate and nothing about the subtraction | refused, naming `subtracted` |
+| `accepted-detector-response-not-measured.json` | the four optional detector fields carrying `not_measured` instead of values | accepted |
 
 The three around `delay_jitter` are the set the Done-when of issue #96 asks for,
 and they are that field rather than a required one on purpose. A depositor who
@@ -51,6 +53,16 @@ a real spelling in this model - it is one of the methods in
 `schema/1.0/fields/uncertainty-array.json` - and it is not one of the three
 `schema/1.0/fields/noise-model.json` admits. If the reference into the row ever
 stops resolving, the schema accepts it and this file turns the run red.
+
+The two detector files are the same field set read from both sides.
+`refused-background-unstated.json` is a depositor who answered the easier
+question: it carries a dark count rate, which is a property of the detector, and
+says nothing about what was taken off the array, which is the thing that cannot
+be added back. `accepted-detector-response-not-measured.json` is the other side,
+four detector characterisations the depositor never made, each written as
+`not_measured` rather than left out or filled with a plausible number. A
+reanalyst reading it knows which corrections are unavailable, which is a
+different statement from a deposit that looks complete.
 
 ## The numbers in them
 

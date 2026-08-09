@@ -176,6 +176,8 @@ jobs:
                 echo "\$.shots_per_point.state: 'not_recorded' is not one of ['present', 'estimated']" ;;
               refused-energy-axis-without-calibration.json)
                 echo "\$.energy_calibration.state: 'not_recorded' is not one of ['present', 'estimated']" ;;
+              refused-background-unstated.json)
+                echo "\$.detector_background.value: 'subtracted' is a required property" ;;
               *)
                 echo "" ;;
             esac
