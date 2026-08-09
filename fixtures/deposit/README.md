@@ -27,6 +27,7 @@ never reached.
 | `refused-value-beside-an-absence-state.json` | `delay_jitter` carrying `not_measured` **and** a value | refused |
 | `refused-estimated-without-basis.json` | `dressing_peak_intensity` estimated with no basis | refused, naming `basis` |
 | `accepted-estimated-with-basis.json` | the same estimate, with its basis | accepted |
+| `refused-intensity-without-method.json` | `dressing_peak_intensity` carrying a value and no `determination_method` | refused, naming `determination_method` |
 | `refused-conditional-not-stated.json` | a stage-position axis with the stage relation not applicable | refused, naming the state |
 | `accepted-conditional-stated.json` | a stage-position axis with the stage relation given | accepted |
 | `refused-value-against-its-row.json` | `noise_model` carrying a value no row admits | refused, naming the value |
@@ -72,6 +73,18 @@ from it by that key and nothing else, so what the refusal reaches is one key
 wide. There is no accepted file beside it carrying an absence state, because the
 row is `required` and the assembly holds a required field to the two states that
 carry a value.
+
+The two around `dressing_peak_intensity` are one field refused in two directions,
+and the distinction is worth keeping in view because both files carry a number
+that looks fine. `refused-estimated-without-basis.json` is a depositor calling
+the number an estimate and not saying what the estimate rests on.
+`refused-intensity-without-method.json` is a depositor stating the number as
+measured and not saying how it was obtained, and for this field that is the
+question the whole row exists for: an intensity inferred from a focal spot, a
+pulse energy and a duration and an intensity read off the streaking amplitude are
+the same number with different standing, and the second is circular in a
+reconstruction that is solving for the streaking amplitude. Neither refusal
+reaches the other, which is what makes them two files.
 
 `refused-value-against-its-row.json` is the one that proves the assembly is not
 just a list of key names. Its `noise_model` reads `poisson_from_counts`, which is
