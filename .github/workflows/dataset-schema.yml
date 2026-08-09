@@ -176,6 +176,10 @@ jobs:
                 echo "\$.shots_per_point.state: 'not_recorded' is not one of ['present', 'estimated']" ;;
               refused-energy-axis-without-calibration.json)
                 echo "\$.energy_calibration.state: 'not_recorded' is not one of ['present', 'estimated']" ;;
+              refused-transposed-array.json)
+                echo "\$.spectrogram_axis_order.value: ['energy', 'delay'] is not one of [['delay', 'energy']]" ;;
+              refused-saturated-without-a-marker.json)
+                echo "\$.saturated_pixel_marker.state: 'not_applicable' is not one of ['present', 'estimated']" ;;
               *)
                 echo "" ;;
             esac

@@ -4,9 +4,9 @@
   "description": "The assembly of version 1.0's field rows into the document one dataset's metadata is judged against. Each field's value is referenced out of its row under fields/ rather than copied, so the row stays the one place the field is defined. The record that carries a field's absence state is written here once and applies to every field, as docs/decisions/absence.md fixes its shape. What this schema cannot refuse is listed in deferred_checks, and what nothing refuses at all is listed in not_refused_anywhere; the two are separate because a judgement filed among the validator's checks would read as a refusal somebody is going to write.",
   "type": "object",
   "required": [
-    "schema_version",
     "acquisition_order",
     "acquisition_timestamps",
+    "axis_bin_convention",
     "calibration_reference",
     "completeness_level",
     "converter",
@@ -41,8 +41,13 @@
     "noise_model",
     "processing_history",
     "publication_reference",
+    "saturated_pixel_marker",
     "scan_combination",
+    "schema_version",
     "shots_per_point",
+    "spectrogram",
+    "spectrogram_axis_order",
+    "spectrogram_value_semantics",
     "spectrometer_resolution",
     "stage_to_delay_relation",
     "subtracted_background_variance",
@@ -53,7 +58,8 @@
     "target_shells",
     "target_species",
     "transmission_function",
-    "uncertainty_array"
+    "uncertainty_array",
+    "unmeasured_pixel_marker"
   ],
   "additionalProperties": false,
   "properties": {
@@ -84,6 +90,23 @@
           "properties": {
             "value": {
               "$ref": "fields/acquisition-timestamps.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "axis_bin_convention": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/axis-bin-convention.json#/schema"
             }
           }
         }
@@ -619,6 +642,20 @@
         }
       ]
     },
+    "saturated_pixel_marker": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/saturated-pixel-marker.json#/schema"
+            }
+          }
+        }
+      ]
+    },
     "scan_combination": {
       "allOf": [
         {
@@ -642,6 +679,57 @@
           "properties": {
             "value": {
               "$ref": "fields/shots-per-point.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "spectrogram": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/spectrogram.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "spectrogram_axis_order": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/spectrogram-axis-order.json#/schema"
+            }
+          }
+        }
+      ]
+    },
+    "spectrogram_value_semantics": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/spectrogram-value-semantics.json#/schema"
             }
           }
         }
@@ -803,6 +891,23 @@
           }
         }
       ]
+    },
+    "unmeasured_pixel_marker": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/field_record"
+        },
+        {
+          "$ref": "#/$defs/stated"
+        },
+        {
+          "properties": {
+            "value": {
+              "$ref": "fields/unmeasured-pixel-marker.json#/schema"
+            }
+          }
+        }
+      ]
     }
   },
   "allOf": [
@@ -857,6 +962,41 @@
       "then": {
         "properties": {
           "energy_calibration": {
+            "$ref": "#/$defs/stated"
+          }
+        }
+      }
+    },
+    {
+      "title": "saturated_pixel_marker is required when detector_saturation says a pixel saturated",
+      "description": "detector_saturation is stated and its any_pixel_saturated is true. Specified in docs/model/spectrogram.md.",
+      "if": {
+        "required": [
+          "detector_saturation"
+        ],
+        "properties": {
+          "detector_saturation": {
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "required": [
+                  "any_pixel_saturated"
+                ],
+                "properties": {
+                  "any_pixel_saturated": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "saturated_pixel_marker": {
             "$ref": "#/$defs/stated"
           }
         }
@@ -1064,7 +1204,7 @@
     },
     {
       "id": "delay-values-length-matches-array-delay-axis",
-      "cannot": "reads a file outside the metadata document",
+      "cannot": "compares an array against a value",
       "specified_in": "docs/model/delay-axis.md",
       "refusal": "delay_values has a different length from the spectrogram's delay axis."
     },
@@ -1127,6 +1267,30 @@
       "cannot": "sees the document before it is parsed, and the repeat is gone by then",
       "specified_in": "docs/decisions/schema-language.md",
       "refusal": "the metadata document repeats a key at any level."
+    },
+    {
+      "id": "array-file-length-matches-the-declared-shape",
+      "cannot": "reads a file outside the metadata document",
+      "specified_in": "docs/model/spectrogram.md",
+      "refusal": "the array file does not hold shape[0] times shape[1] elements of the declared type."
+    },
+    {
+      "id": "bin-widths-length-matches-the-energy-extent",
+      "cannot": "compares an array against a value",
+      "specified_in": "docs/model/spectrogram.md",
+      "refusal": "spectrogram_value_semantics.bin_widths has a different length from the energy entry of spectrogram.shape."
+    },
+    {
+      "id": "edge-coordinates-carry-one-more-value-than-bins",
+      "cannot": "compares an array against a value",
+      "specified_in": "docs/model/spectrogram.md",
+      "refusal": "an axis declared as bin_edge does not carry one more coordinate than that axis has bins."
+    },
+    {
+      "id": "marker-file-is-listed-in-the-manifest",
+      "cannot": "reads a file outside the metadata document",
+      "specified_in": "docs/model/spectrogram.md",
+      "refusal": "a mask file named by unmeasured_pixel_marker or saturated_pixel_marker is not in the deposit."
     }
   ],
   "not_refused_anywhere": [
@@ -1164,6 +1328,16 @@
       "id": "inter-scan-scatter-really-was-measured",
       "specified_in": "docs/model/uncertainty.md",
       "claim": "An uncertainty method declared as measured_inter_scan_scatter really was measured."
+    },
+    {
+      "id": "declared-axis-order-matches-the-bytes",
+      "specified_in": "docs/model/spectrogram.md",
+      "claim": "A block declared with the delay index varying slowest really was written that way."
+    },
+    {
+      "id": "bin-convention-is-the-one-the-coordinates-were-written-under",
+      "specified_in": "docs/model/spectrogram.md",
+      "claim": "Coordinates declared as bin centres really are centres rather than edges."
     }
   ]
 }

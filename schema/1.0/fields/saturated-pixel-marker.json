@@ -1,0 +1,91 @@
+{
+  "field": "saturated_pixel_marker",
+  "quantity": "none",
+  "requirement": "conditional",
+  "requiredWhen": "detector_saturation is stated and its any_pixel_saturated is true. Specified in docs/model/spectrogram.md.",
+  "withoutThisField": "A deposit that has already admitted a saturated pixel gives no way to find one, so a compressed peak is fitted as though it were the true one and every parameter retrieved through it is biased.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "how_marked"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "how_marked": {
+        "enum": [
+          "not_marked",
+          "sentinel_value",
+          "mask_file",
+          "at_or_above_saturation_level"
+        ]
+      },
+      "value": {
+        "oneOf": [
+          {
+            "type": "number"
+          },
+          {
+            "const": "not_a_number"
+          }
+        ]
+      },
+      "file": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    },
+    "allOf": [
+      {
+        "title": "A sentinel is written down, and nothing else carries one",
+        "if": {
+          "required": [
+            "how_marked"
+          ],
+          "properties": {
+            "how_marked": {
+              "const": "sentinel_value"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "value"
+          ]
+        },
+        "else": {
+          "not": {
+            "required": [
+              "value"
+            ]
+          }
+        }
+      },
+      {
+        "title": "A mask names its file, and nothing else names one",
+        "if": {
+          "required": [
+            "how_marked"
+          ],
+          "properties": {
+            "how_marked": {
+              "const": "mask_file"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "file"
+          ]
+        },
+        "else": {
+          "not": {
+            "required": [
+              "file"
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

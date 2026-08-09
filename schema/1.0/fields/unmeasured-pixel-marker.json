@@ -1,0 +1,89 @@
+{
+  "field": "unmeasured_pixel_marker",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "A pixel that was never measured cannot be told from one measured as zero, so absent data enters a fit as a measurement of zero and pulls every parameter that depends on the region it sits in.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "how_marked"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "how_marked": {
+        "enum": [
+          "every_pixel_measured",
+          "sentinel_value",
+          "mask_file"
+        ]
+      },
+      "value": {
+        "oneOf": [
+          {
+            "type": "number"
+          },
+          {
+            "const": "not_a_number"
+          }
+        ]
+      },
+      "file": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      }
+    },
+    "allOf": [
+      {
+        "title": "A sentinel is written down, and nothing else carries one",
+        "if": {
+          "required": [
+            "how_marked"
+          ],
+          "properties": {
+            "how_marked": {
+              "const": "sentinel_value"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "value"
+          ]
+        },
+        "else": {
+          "not": {
+            "required": [
+              "value"
+            ]
+          }
+        }
+      },
+      {
+        "title": "A mask names its file, and nothing else names one",
+        "if": {
+          "required": [
+            "how_marked"
+          ],
+          "properties": {
+            "how_marked": {
+              "const": "mask_file"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "file"
+          ]
+        },
+        "else": {
+          "not": {
+            "required": [
+              "file"
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

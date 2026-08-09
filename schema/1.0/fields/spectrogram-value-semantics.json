@@ -1,0 +1,65 @@
+{
+  "field": "spectrogram_value_semantics",
+  "quantity": "none",
+  "requirement": "required",
+  "withoutThisField": "Nothing says what one pixel holds, so counting statistics are unavailable and a spectrum stored as a density cannot be told from one stored per bin, which is the difference between a peak with the right shape and one with the wrong shape.",
+  "schema": {
+    "type": "object",
+    "required": [
+      "quantity_per_pixel",
+      "per"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "quantity_per_pixel": {
+        "enum": [
+          "counts",
+          "count_rate",
+          "mean_per_shot",
+          "arbitrary_units"
+        ]
+      },
+      "per": {
+        "enum": [
+          "bin",
+          "unit_of_axis"
+        ]
+      },
+      "bin_widths": {
+        "type": "array",
+        "items": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "minItems": 1
+      }
+    },
+    "allOf": [
+      {
+        "title": "A density carries the bin widths it was divided by, and a per-bin value carries none",
+        "if": {
+          "required": [
+            "per"
+          ],
+          "properties": {
+            "per": {
+              "const": "unit_of_axis"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "bin_widths"
+          ]
+        },
+        "else": {
+          "not": {
+            "required": [
+              "bin_widths"
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

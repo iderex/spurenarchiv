@@ -1,0 +1,10 @@
+{
+  "quantity_per_pixel": "counts",
+  "per": "bin",
+  "bin_widths": [
+    0.42,
+    0.44,
+    0.47,
+    0.51
+  ]
+}
