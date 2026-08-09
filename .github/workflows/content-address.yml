@@ -12,12 +12,18 @@
 # plan where that claim is checked by a machine. If it ever fails, the repair is
 # in container.md rather than in the specification this runs against.
 #
-# Everything below is sha256sum, sort, cut and printf. That is deliberate and it
-# is the point rather than a convenience: docs/decisions/identity.md claims every
-# digest here can be recomputed by hand from the files with a hashing tool and a
-# sort, so a check that needed this repository's software to reproduce them would
-# be checking something other than what it claims. There is no software to use
-# either way:
+# The same job also derives the form a paper carries (#37), which
+# docs/spec/identifier.md defines as a rendering of the version digest. It sits
+# here rather than in a workflow of its own because it is a function of a digest
+# recomputed above, and a second workflow would have to recompute those digests
+# and would then be a second construction to keep in step with this one.
+#
+# Everything below is sha256sum, sort, cut, printf and one awk program for the
+# rendering. That is deliberate and it is the point rather than a convenience:
+# docs/decisions/identity.md claims every digest here can be recomputed by hand
+# from the files with a hashing tool and a sort, so a check that needed this
+# repository's software to reproduce them would be checking something other than
+# what it claims. There is no software to use either way:
 #
 #     git ls-files -- tool/ | wc -l
 #     0
@@ -185,3 +191,156 @@ jobs:
           fi
 
           echo "Checked 9 assertion(s) across 4 fixture dataset(s)."
+
+          # ## The citable form (#37)
+          #
+          # docs/spec/identifier.md is the normative prose. Everything below
+          # derives from the version digests recomputed above rather than from
+          # the bytes a second time, because the citable form is a function of
+          # the digest and a second construction here would be a second thing to
+          # keep in step.
+          #
+          # One awk program per operation, because each is one function and a
+          # reader checking it against the specification should not have to
+          # follow it through a pipeline.
+          identifier_of() {
+            printf '%s\n' "$1" | awk '
+              function value_of(bits,   i, v) { v = 0; for (i = 1; i <= 5; i++) v = v * 2 + substr(bits, i, 1); return v }
+              BEGIN {
+                A = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+                H = "0123456789abcdef"
+                split("0000 0001 0010 0011 0100 0101 0110 0111 1000 1001 1010 1011 1100 1101 1110 1111", B, " ")
+              }
+              {
+                sub(/^sha256:/, "", $0)
+                bits = ""
+                for (i = 1; i <= length($0); i++) bits = bits B[index(H, tolower(substr($0, i, 1)))]
+                s = "1"
+                for (i = 1; i <= 17; i++) s = s substr(A, value_of(substr(bits, (i - 1) * 5 + 1, 5)) + 1, 1)
+                c = 0
+                for (i = 1; i <= 18; i++) c = (c * 32 + index(A, substr(s, i, 1)) - 1) % 1021
+                s = s substr(A, int(c / 32) + 1, 1) substr(A, c % 32 + 1, 1)
+                printf "%s-%s-%s-%s-%s\n", substr(s, 1, 4), substr(s, 5, 4), substr(s, 9, 4), substr(s, 13, 4), substr(s, 17, 4)
+              }
+            '
+          }
+
+          # Every single-symbol substitution and every adjacent transposition of
+          # two different symbols, each one checked. Three numbers, so a sweep
+          # that tried nothing cannot read like a sweep that tried everything and
+          # found nothing.
+          transcription_sweep() {
+            printf '%s\n' "$1" | awk '
+              function ok(s,   i, p, c) {
+                c = 0
+                for (i = 1; i <= 20; i++) {
+                  p = index(A, substr(s, i, 1))
+                  if (p == 0) return 0
+                  if (i <= 18) c = (c * 32 + p - 1) % 1021
+                }
+                return substr(s, 19, 1) == substr(A, int(c / 32) + 1, 1) && substr(s, 20, 1) == substr(A, c % 32 + 1, 1)
+              }
+              BEGIN { A = "0123456789ABCDEFGHJKMNPQRSTVWXYZ" }
+              {
+                s = $0; gsub(/-/, "", s)
+                subs = 0; trans = 0; slipped = 0
+                for (i = 1; i <= 20; i++) {
+                  for (j = 1; j <= 32; j++) {
+                    ch = substr(A, j, 1)
+                    if (ch == substr(s, i, 1)) continue
+                    subs++
+                    if (ok(substr(s, 1, i - 1) ch substr(s, i + 1))) slipped++
+                  }
+                }
+                for (i = 1; i <= 19; i++) {
+                  a = substr(s, i, 1); b = substr(s, i + 1, 1)
+                  if (a == b) continue
+                  trans++
+                  if (ok(substr(s, 1, i - 1) b a substr(s, i + 2))) slipped++
+                }
+                printf "%d %d %d\n", subs, trans, slipped
+              }
+            '
+          }
+
+          : > "$work/identifiers"
+          for case_dir in "$CASES"/*/; do
+            name=$(basename "$case_dir")
+            printf '%s %s\n' "$name" "$(identifier_of "$(value "$work/$name" version)")" >> "$work/identifiers"
+          done
+          echo "The citable form of each fixture dataset:"
+          sed 's/^/        /' "$work/identifiers"
+
+          ident() { awk -v k="$1" '$1 == k { print $2 }' "$work/identifiers"; }
+
+          # The pinned expectation, for the reason the digests carry one: without
+          # it the assertions below would only show the derivation agreeing with
+          # itself.
+          pinned=$(cat "$CASES/base/expected-identifier")
+          if [ "$(ident base)" != "$pinned" ]; then
+            echo "::error file=${CASES}/base/expected-identifier::base renders to $(ident base) and the identifier recorded beside it is ${pinned}. Either the fixture bytes moved or the derivation did, and docs/spec/identifier.md says which of the two is allowed to."
+            exit 1
+          fi
+          echo "base renders to the identifier recorded beside it: ${pinned}"
+
+          # The deposit copied to a different path. The check runs on a machine
+          # that has never seen this repository, so the host half of the same
+          # claim is the run itself rather than anything arranged here.
+          elsewhere=$(mktemp -d)/a-different-place
+          mkdir -p "$elsewhere"
+          cp -R "$CASES/base/." "$elsewhere/"
+          digests_of "$elsewhere" > "$work/copied-elsewhere"
+          copied=$(identifier_of "$(value "$work/copied-elsewhere" version)")
+          if [ "$copied" != "$pinned" ]; then
+            echo "::error::The same deposit at ${elsewhere} renders to ${copied} and at ${CASES}/base to ${pinned}, so the identifier depends on where the bytes sit."
+            exit 1
+          fi
+          echo "The same deposit copied to another path renders to the same identifier."
+
+          fail=0
+          assert_same_identifier() {
+            if [ "$(ident "$1")" = "$(ident "$2")" ]; then
+              echo "ok    $1 and $2 render to the same identifier"
+            else
+              echo "FAIL  $1 and $2 should render to the same identifier and do not"
+              fail=1
+            fi
+          }
+          assert_differing_identifier() {
+            if [ "$(ident "$1")" != "$(ident "$2")" ]; then
+              echo "ok    $1 and $2 render to different identifiers"
+            else
+              echo "FAIL  $1 and $2 should render to different identifiers and do not"
+              fail=1
+            fi
+          }
+
+          # The rendering keeps what the digests decide. Renaming every file
+          # changes nothing; a corrected calibration and one flipped bit each
+          # give a different string to cite.
+          assert_same_identifier      base rewritten
+          assert_differing_identifier base corrected-metadata
+          assert_differing_identifier base flipped-bit
+
+          if [ "$fail" -ne 0 ]; then
+            echo "::error::The citable form does not keep what docs/spec/content-address.md's digests decide."
+            exit 1
+          fi
+
+          # A transcription error is detected rather than resolving to another
+          # dataset. Refused for the reason it names: the sweep counts what it
+          # tried, and a run that tried nothing fails here.
+          set -- $(transcription_sweep "$pinned")
+          subs=$1
+          trans=$2
+          slipped=$3
+          echo "Retyped ${pinned}: ${subs} single-symbol substitution(s) and ${trans} adjacent transposition(s) of differing symbols."
+          if [ "$subs" -ne 620 ] || [ "$trans" -eq 0 ]; then
+            echo "::error::The transcription sweep did not cover what it claims to. A 20 symbol identifier has 620 single-symbol substitutions."
+            exit 1
+          fi
+          if [ "$slipped" -ne 0 ]; then
+            echo "::error::${slipped} retyped form(s) still verify, so a transcription error can resolve to something. docs/spec/identifier.md's check symbols do not catch what that section says they catch."
+            exit 1
+          fi
+          echo "None of the ${subs} substitutions and none of the ${trans} transpositions verifies."
