@@ -47,6 +47,7 @@ never reached.
 | `refused-background-unstated.json` | `detector_background` carrying a dark count rate and no `subtracted` | refused, naming `subtracted` |
 | `accepted-background-none.json` | `detector_background` with `subtracted` reading `none` | accepted |
 | `accepted-efficiency-not-measured.json` | `detection_efficiency` carrying `not_measured` instead of a curve | accepted |
+| `accepted-detector-response-not-measured.json` | the four optional detector characterisations carrying `not_measured` instead of values | accepted |
 
 The three around `delay_jitter` are the set the Done-when of issue #96 asks for,
 and they are that field rather than a required one on purpose. A depositor who
@@ -127,6 +128,13 @@ the field carries `not_measured` rather than being absent or defaulting to flat.
 An efficiency that falls at low energy suppresses one side of the streaking
 modulation, and a reanalyst who cannot tell a flat curve from an unmeasured one
 cannot tell whether that bias is in the trace.
+
+`accepted-detector-response-not-measured.json` widens that from one field to
+four. A depositor who characterised none of the detector response writes each
+of the four as `not_measured` rather than leaving them out or filling in a
+plausible number, and the deposit is accepted. A reanalyst reading it knows
+which corrections are unavailable, which is a different statement from a
+deposit that merely looks complete.
 
 ## The numbers in them
 
