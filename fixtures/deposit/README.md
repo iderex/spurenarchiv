@@ -22,6 +22,7 @@ never reached.
 | --- | --- | --- |
 | `accepted-complete-deposit.json` | nothing, it is the base | accepted |
 | `refused-missing-key.json` | `delay_jitter` left out | refused, naming `delay_jitter` |
+| `refused-sign-convention-absent.json` | `delay_sign_convention` left out | refused, naming `delay_sign_convention` |
 | `accepted-absence-state.json` | `delay_jitter` carrying `not_measured` instead of a value | accepted |
 | `refused-value-beside-an-absence-state.json` | `delay_jitter` carrying `not_measured` **and** a value | refused |
 | `refused-estimated-without-basis.json` | `dressing_peak_intensity` estimated with no basis | refused, naming `basis` |
@@ -61,6 +62,16 @@ the energy index varying slowest, which `docs/spec/deposit-layout.md`'s read doe
 not fit and `schema/1.0/fields/spectrogram-axis-order.json` does not admit. The
 base beside it is the near miss, one value away, and `docs/model/spectrogram.md`
 is where admitting one order is argued.
+
+`refused-sign-convention-absent.json` is the same shape one field over, and the
+field is the one `docs/decisions/conventions.md` refuses a default for. The two
+sign conventions are mirror images and the retrieved chirp changes sign between
+them, so a deposit that leaves the key out has to be refused rather than read as
+the archive's own convention. Its near miss is the base document, which differs
+from it by that key and nothing else, so what the refusal reaches is one key
+wide. There is no accepted file beside it carrying an absence state, because the
+row is `required` and the assembly holds a required field to the two states that
+carry a value.
 
 `refused-value-against-its-row.json` is the one that proves the assembly is not
 just a list of key names. Its `noise_model` reads `poisson_from_counts`, which is

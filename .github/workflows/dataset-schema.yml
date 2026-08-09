@@ -160,6 +160,8 @@ jobs:
             case "$1" in
               refused-missing-key.json)
                 echo "'delay_jitter' is a required property" ;;
+              refused-sign-convention-absent.json)
+                echo "'delay_sign_convention' is a required property" ;;
               refused-conditional-not-stated.json)
                 echo "\$.stage_to_delay_relation.state: 'not_applicable' is not one of ['present', 'estimated']" ;;
               refused-value-beside-an-absence-state.json)
