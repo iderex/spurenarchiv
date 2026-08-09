@@ -87,6 +87,10 @@ number density in inverse cubic metres and a length in metres, so the unit
 follows from the row's `quantity` through that record. Interaction length and
 nozzle diameter are lengths.
 
+`docs/decisions/conventions.md` names the quantity for both, the number density
+and the lengths the nozzle diameter and the interaction length are. Nothing about
+either is derived in this document.
+
 ## Resonances, and the phase that is not the pulse's
 
 `target_resonances` is optional and carries any resonance or autoionising state
