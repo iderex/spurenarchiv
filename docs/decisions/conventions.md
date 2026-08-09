@@ -58,6 +58,22 @@ everyone writes, was weighed and declined: it puts one quantity outside the
 system every other quantity is in, which is the condition the paragraph above
 says makes a dimensional check impossible.
 
+**Number density.** Inverse cubic metres. The target density in the interaction
+region is the quantity this covers, and it is here rather than left to follow
+from the general rule because a quantity derived somewhere else is a quantity two
+rows can derive differently. Densities in this field are written per cubic
+centimetre far more often than per cubic metre, so the factor of a million is a
+crossing most deposits carrying a density will make, and it is exact and applied
+in the same one place as the others.
+
+**Pressure.** Pascals. No field in the model carries a pressure today, and this
+line fixes the representation ahead of the field rather than creating one. It is
+written now because the field it is waiting for is predictable: a depositor who
+has a backing pressure and no density has the number that most target densities
+were estimated from, and the units that number is written in are millibars and
+torr rather than pascals. Fixing it here costs one line. Leaving it costs a row
+that arrives with its own answer, which is the drift this section exists against.
+
 **Field direction.** A unit vector in a stated frame, together with the
 definition of the vector potential given below. Directions are not stored as
 angles relative to something a sentence describes.
