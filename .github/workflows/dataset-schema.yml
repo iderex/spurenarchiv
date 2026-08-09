@@ -180,6 +180,14 @@ jobs:
                 echo "\$.spectrogram_axis_order.value: ['energy', 'delay'] is not one of [['delay', 'energy']]" ;;
               refused-saturated-without-a-marker.json)
                 echo "\$.saturated_pixel_marker.state: 'not_applicable' is not one of ['present', 'estimated']" ;;
+              refused-sign-convention-omitted.json)
+                echo "'delay_sign_convention' is a required property" ;;
+              refused-sign-convention-not-recorded.json)
+                echo "\$.delay_sign_convention.state: 'not_recorded' is not one of ['present', 'estimated']" ;;
+              refused-intensity-without-a-method.json)
+                echo "\$.dressing_peak_intensity.value: 'determination_method' is a required property" ;;
+              refused-background-unstated.json)
+                echo "\$.detector_background.value: 'subtracted' is a required property" ;;
               *)
                 echo "" ;;
             esac

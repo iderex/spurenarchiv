@@ -39,6 +39,12 @@ never reached.
 | `refused-transposed-array.json` | `spectrogram_axis_order` reading `energy` first, with the shape swapped to match | refused, naming the order |
 | `refused-saturated-without-a-marker.json` | `any_pixel_saturated` true and `saturated_pixel_marker` not applicable | refused, naming the state |
 | `accepted-saturated-with-a-marker.json` | the same, with the marker given | accepted |
+| `refused-sign-convention-omitted.json` | `delay_sign_convention` left out | refused, naming `delay_sign_convention` |
+| `refused-sign-convention-not-recorded.json` | `delay_sign_convention` carrying `not_recorded` | refused, naming the state |
+| `refused-intensity-without-a-method.json` | `dressing_peak_intensity` carrying a number and no `determination_method` | refused, naming `determination_method` |
+| `refused-background-unstated.json` | `detector_background` carrying a dark count rate and no `subtracted` | refused, naming `subtracted` |
+| `accepted-background-none.json` | `detector_background` with `subtracted` reading `none` | accepted |
+| `accepted-efficiency-not-measured.json` | `detection_efficiency` carrying `not_measured` instead of a curve | accepted |
 
 The three around `delay_jitter` are the set the Done-when of issue #96 asks for,
 and they are that field rather than a required one on purpose. A depositor who
@@ -62,6 +68,41 @@ a real spelling in this model - it is one of the methods in
 `schema/1.0/fields/uncertainty-array.json` - and it is not one of the three
 `schema/1.0/fields/noise-model.json` admits. If the reference into the row ever
 stops resolving, the schema accepts it and this file turns the run red.
+
+The two sign-convention files are issue #23's, and they are two rather than one
+because "a deposit that omits the sign convention" has two meanings that fail
+differently. A deposit with no `delay_sign_convention` key is the easy case and
+almost nobody will write it, since a depositor working from the template gets
+every key. A deposit carrying the key in `not_recorded` is the one that will
+actually arrive, because a depositor who does not know which convention their
+axis was recorded in has a state that says exactly that and will reach for it.
+Both have to be refused, since the two conventions are mirror images and no
+inspection of the array distinguishes them, so a trace whose convention is lost
+is not archivable as a streaking trace. A pair that proved only the first would
+leave the guard passing the case the field exists for.
+
+`refused-intensity-without-a-method.json` is issue #25's. The number in it is a
+perfectly plausible peak intensity and the deposit is refused anyway, because a
+peak intensity read off the streaking amplitude and one inferred from a focal
+spot, a pulse energy and a duration are different claims, and a reanalyst
+testing a reconstruction against this trace has to be able to exclude the first
+automatically. The method is a value from a closed set for that reason rather
+than free text.
+
+The background files are issue #27's. `refused-background-unstated.json` is the
+deposit somebody writes when they answer the easier question: it carries a dark
+count rate, which is a property of the detector, and says nothing about what was
+taken off this array, which is the thing that cannot be added back.
+`accepted-background-none.json` beside it is the deposit that says nothing was
+subtracted, as a positive fact rather than by leaving the key out, and it is
+accepted. The distance between the two is one key.
+
+`accepted-efficiency-not-measured.json` is the same issue's other half. An
+efficiency curve is optional and a deposit without one still has to say so, so
+the field carries `not_measured` rather than being absent or defaulting to flat.
+An efficiency that falls at low energy suppresses one side of the streaking
+modulation, and a reanalyst who cannot tell a flat curve from an unmeasured one
+cannot tell whether that bias is in the trace.
 
 ## The numbers in them
 
