@@ -168,6 +168,8 @@ jobs:
                 echo "\$.delay_jitter: " ;;
               refused-estimated-without-basis.json)
                 echo "\$.dressing_peak_intensity: 'basis' is a required property" ;;
+              refused-intensity-without-method.json)
+                echo "\$.dressing_peak_intensity.value: 'determination_method' is a required property" ;;
               refused-value-against-its-row.json)
                 echo "\$.noise_model.value: 'poisson_from_counts' is not one of" ;;
               refused-empty-shell-list.json)
