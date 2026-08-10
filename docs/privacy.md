@@ -174,11 +174,12 @@ the schema for a check to read. Issue #73 holds the mechanism and issue #52 hold
 the export. Until they land, this is a property of a design rather than of a
 running program, and the difference matters.
 
-**No network call is made when a deposit is read.** Not enforced, and there is
-nothing to enforce it against. There is no reader:
+**No network call is made when a deposit is read.** Not enforced. There is a
+reader now and nothing in it opens a socket, but that is a reading of the source
+rather than a check that would refuse one being added to it:
 
-    git ls-files -- tool/ | wc -l
-    0
+    git grep -n -E 'std::net|TcpStream|UdpSocket' -- tool/src/ ; echo "exit=$?"
+    exit=1
 
 Issue #49 holds the boundary and the check that would refuse an undeclared call
 site.

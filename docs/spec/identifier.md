@@ -198,10 +198,11 @@ different symbols in the identifier is refused, with the three counts printed, s
 a sweep that tried nothing cannot read like a sweep that tried everything.
 
 What none of that checks is that any program in this repository derives these
-identifiers, because there is none:
+identifiers. There is a program now and it computes no digest at all, so it
+derives nothing this document is about:
 
-    git ls-files -- tool/ | wc -l
-    0
+    git grep -n -i -e sha256 -e digest -- tool/src/ ; echo "exit=$?"
+    exit=1
 
 The reader in issue #36 is where a program first has to agree with this document.
 

@@ -33,19 +33,21 @@ refusal. Each refusal below has a fixture under `fixtures/manifest/` that trips
 it, and the accepted fixtures beside them are what stops a rule reaching past what
 it names.
 
-None of that is a validator, and the difference is the whole of what a depositor
-has. That check judges fixture deposits inside this repository. There is nothing
-here anybody can point at a directory of their own:
+None of that is a validator a depositor can point at a deposit of their own.
+That check judges fixture deposits inside this repository. What a depositor can
+run is the validator in issue #32, and it is handed one metadata document rather
+than the directory that document sits in, so every rule here that needs a second
+file opened is outside what it answers. It names those on every run:
 
-    git ls-files -- tool/ | wc -l
-    0
+    deposit-validator <metadata.json> | grep -c 'reads a file outside the metadata document'
+    3
 
-So a real deposit that breaks every rule in this document still lands exactly as
-quietly as one that keeps them, and a depositor still finds out from somebody else
-rather than from their own machine. That is issue #32, with the check a depositor
-runs in #57. What has changed is narrower and is worth stating exactly: every rule
-below is now decidable rather than prose, and each has been observed refusing the
-deposit it names.
+So a real deposit whose files do not match its manifest still lands exactly as
+quietly as one whose files do, and its depositor still finds out from somebody
+else rather than from their own machine. That is the deposit-directory half of
+issue #32, with the check a depositor runs in #57. What has changed is narrower
+and is worth stating exactly: every rule below is now decidable rather than
+prose, and each has been observed refusing the deposit it names.
 
 ## A deposit is a directory
 
