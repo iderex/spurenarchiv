@@ -48,5 +48,19 @@ jobs:
           rustc --version
           cargo --version
 
+      # #7 asks that the suite pass on a machine with no display and under an
+      # unprivileged account. What a run leaves behind otherwise is a green tick
+      # and somebody's belief about the image it ran on, and reading a property
+      # off an image's documentation is not reading it off the run. These four
+      # lines are what makes the run itself the evidence. None of them asks for
+      # a privilege, opens a window or touches the network.
+      - name: The machine the suite is about to run on
+        run: |
+          set -euo pipefail
+          echo "DISPLAY=${DISPLAY:-unset} WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-unset}"
+          echo "X11 sockets present: $(ls -1 /tmp/.X11-unix 2>/dev/null | wc -l)"
+          echo "account: $(id -un), uid $(id -u), groups $(id -Gn)"
+          echo "whether this account could become root by asking was not read, because reading it means asking"
+
       - name: Run the suite
         run: cargo test --locked
