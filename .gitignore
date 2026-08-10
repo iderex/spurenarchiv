@@ -1,0 +1,5 @@
+# Cargo's build directory. Everything in it is derived from the tracked source
+# and the tracked lock file, and it is larger than the rest of this tree
+# together, so a clone that carried it would cost every contributor the size of
+# an archive to obtain nothing that is not rebuilt by the build.
+/tool/target/
