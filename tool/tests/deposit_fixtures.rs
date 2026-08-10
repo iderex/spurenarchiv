@@ -582,3 +582,49 @@ fn the_command_writes_the_whole_report_as_json() {
         "the command and the library report different numbers of absences"
     );
 }
+
+/// A key the schema does not admit is reported under that key. The condition
+/// names it in single quotes where a missing key is named in double ones, and
+/// reading only one spelling left this finding filed against the document as a
+/// whole while the message it carried named the key.
+#[test]
+fn a_key_the_schema_does_not_admit_is_reported_under_its_own_name() {
+    let mut document = base();
+    document["delay_axis_reference_frame"] = json!({ "state": "not_applicable" });
+
+    let report = judge(&document);
+    let named: Vec<_> = report
+        .findings
+        .iter()
+        .filter(|f| f.field == "delay_axis_reference_frame")
+        .collect();
+    assert_eq!(
+        named.len(),
+        1,
+        "the unexpected key was not reported under its own name: {:?}",
+        report.findings
+    );
+}
+
+/// The near miss for reading the second delimiter. A message whose apostrophe
+/// belongs to ordinary prose must not have half a sentence read out of it as a
+/// key, and the deposit fixtures are where such a message would come from.
+#[test]
+fn no_finding_names_a_field_with_a_space_in_it() {
+    let directory = repository().join("fixtures/deposit");
+    for entry in std::fs::read_dir(&directory).expect("fixtures/deposit is tracked") {
+        let path = entry.expect("a readable directory entry").path();
+        if path.extension().and_then(|e| e.to_str()) != Some("json") {
+            continue;
+        }
+        let report = validate(&path, &schema_root()).expect("a fixture is judgeable");
+        for finding in &report.findings {
+            assert!(
+                !finding.field.contains(char::is_whitespace),
+                "{} reports a finding against {:?}, which is prose rather than a key",
+                path.display(),
+                finding.field
+            );
+        }
+    }
+}
