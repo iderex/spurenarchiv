@@ -21,7 +21,7 @@ use serde_json::Value;
 mod deferred;
 
 /// One reason a deposit was refused, in the three parts a depositor needs.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize)]
 pub struct Finding {
     /// The deposit key the problem is in, or `(document)` where it is the
     /// document as a whole.
@@ -31,17 +31,37 @@ pub struct Finding {
 }
 
 /// A deferred check the schema declares that this run did not evaluate.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
 pub struct NotEvaluated {
     pub id: String,
     pub why: String,
 }
 
+/// One field of a conforming deposit that carries a state rather than a value.
+///
+/// A deposit missing optional fields is valid and is not as good as one that is
+/// not, and this is how the difference is said without either refusing it or
+/// pretending it is equivalent.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize)]
+pub struct Absent {
+    pub field: String,
+    /// One of the states `docs/decisions/absence.md` fixes, as the deposit
+    /// wrote it. `estimated` is here too, and belongs here for the reason that
+    /// record gives: a reader who tests for absence by asking whether a number
+    /// is present passes straight over it.
+    pub state: String,
+    /// What a reanalysis cannot do without this field, in the field row's own
+    /// sentence. Under `not_applicable` it describes a loss that does not arise
+    /// here, because the quantity has no meaning for this measurement.
+    pub without_this_field: String,
+}
+
 /// What one run produced.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct Report {
     pub schema_version: String,
     pub findings: Vec<Finding>,
+    pub completeness: Vec<Absent>,
     pub not_evaluated: Vec<NotEvaluated>,
 }
 
@@ -126,6 +146,11 @@ pub fn validate_text(text: &str, schema_root: &Path) -> Result<Report, Error> {
                 problem: format!("the key {key} is written more than once, and JSON parsers disagree about which of the two values that leaves"),
                 remedy: format!("keep one {key} and delete the other"),
             }],
+            // No completeness statement is made about a document that has no
+            // single meaning. An empty list here says nothing was found absent,
+            // which would be a claim about a document nobody has read the same
+            // way twice.
+            completeness: Vec::new(),
             not_evaluated: vec![NotEvaluated {
                 id: "(every other check)".to_string(),
                 why: "a document with a repeated key has no single meaning for a later check to be about, so the run stopped here".to_string(),
@@ -153,12 +178,46 @@ pub fn validate_text(text: &str, schema_root: &Path) -> Result<Report, Error> {
     findings.dedup();
 
     let not_evaluated = deferred::not_evaluated(&schema);
+    let completeness = completeness(&document, &version_dir);
 
     Ok(Report {
         schema_version: version,
         findings,
+        completeness,
         not_evaluated,
     })
+}
+
+/// Every field of this version that the deposit carries in a state rather than
+/// a value, with the sentence its row gives for what a reader cannot do without
+/// it.
+///
+/// Driven by the version's rows rather than by the document's keys, so a field
+/// the version defines and the document omits entirely cannot slip out of the
+/// report by being absent from the wrong direction. Such a document is refused
+/// anyway, and a report that quietly said nothing about it would be the one a
+/// reader trusts.
+fn completeness(document: &Value, version_dir: &Path) -> Vec<Absent> {
+    let mut absent: Vec<Absent> = rows(version_dir)
+        .into_iter()
+        .filter_map(|(field, row)| {
+            let state = document.get(&field)?.get("state")?.as_str()?;
+            if state == "present" {
+                return None;
+            }
+            Some(Absent {
+                field,
+                state: state.to_string(),
+                without_this_field: row
+                    .get("withoutThisField")
+                    .and_then(Value::as_str)
+                    .unwrap_or("this version's row for the field states no consequence")
+                    .to_string(),
+            })
+        })
+        .collect();
+    absent.sort();
+    absent
 }
 
 fn parse(text: &str) -> Result<Value, Error> {

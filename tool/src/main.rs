@@ -8,17 +8,21 @@ use std::process::ExitCode;
 use spurenarchiv_validator::{validate, Report};
 
 const USAGE: &str = "\
-usage: deposit-validator <metadata.json> [<metadata.json> ...] [--schema-root <dir>]
+usage: deposit-validator <metadata.json> [<metadata.json> ...] [--schema-root <dir>] [--json]
 
   --schema-root <dir>   where the schema versions are, default ./schema
+  --json                write the whole report as JSON instead of as prose
 
 Exit status is 0 when every document was accepted, 1 when any was refused, and
-2 when a document could not be judged at all.
+2 when a document could not be judged at all. The status is about conformance
+and never about completeness: a deposit that states a field's absence is a
+conforming deposit and exits 0.
 ";
 
 fn main() -> ExitCode {
     let mut documents: Vec<PathBuf> = Vec::new();
     let mut schema_root = PathBuf::from("schema");
+    let mut as_json = false;
     let mut arguments = std::env::args().skip(1);
     while let Some(argument) = arguments.next() {
         match argument.as_str() {
@@ -26,6 +30,7 @@ fn main() -> ExitCode {
                 print!("{USAGE}");
                 return ExitCode::SUCCESS;
             }
+            "--json" => as_json = true,
             "--schema-root" => match arguments.next() {
                 Some(directory) => schema_root = PathBuf::from(directory),
                 None => {
@@ -44,16 +49,41 @@ fn main() -> ExitCode {
 
     let mut refused = false;
     let mut unjudged = false;
+    let mut judged: Vec<serde_json::Value> = Vec::new();
+
     for document in &documents {
+        let name = document.display().to_string();
         match validate(document, &schema_root) {
             Ok(report) => {
                 refused |= !report.accepted();
-                print(&document.display().to_string(), &report);
+                if as_json {
+                    judged.push(as_object(&name, &report));
+                } else {
+                    print(&name, &report);
+                }
             }
             Err(error) => {
                 unjudged = true;
-                println!("{}: not judged", document.display());
-                println!("  {error}");
+                if as_json {
+                    judged.push(serde_json::json!({
+                        "document": name,
+                        "judged": false,
+                        "why": error.to_string(),
+                    }));
+                } else {
+                    println!("{name}: not judged");
+                    println!("  {error}");
+                }
+            }
+        }
+    }
+
+    if as_json {
+        match serde_json::to_string_pretty(&judged) {
+            Ok(text) => println!("{text}"),
+            Err(error) => {
+                eprintln!("the report could not be written as JSON: {error}");
+                return ExitCode::from(2);
             }
         }
     }
@@ -65,6 +95,24 @@ fn main() -> ExitCode {
     } else {
         ExitCode::SUCCESS
     }
+}
+
+/// The same report a reader is shown, for something that is going to consume it
+/// rather than read it. The verdict is written here rather than left to be
+/// inferred from an empty finding list, because an empty list and a run that
+/// judged nothing look the same to a caller counting entries.
+fn as_object(name: &str, report: &Report) -> serde_json::Value {
+    let mut object = serde_json::json!({
+        "document": name,
+        "judged": true,
+        "accepted": report.accepted(),
+    });
+    if let (Some(map), Ok(serde_json::Value::Object(rest))) =
+        (object.as_object_mut(), serde_json::to_value(report))
+    {
+        map.extend(rest);
+    }
+    object
 }
 
 fn print(name: &str, report: &Report) {
@@ -85,6 +133,8 @@ fn print(name: &str, report: &Report) {
         }
     }
 
+    completeness(report);
+
     // Printed on an accepted document as well. A run that covered less than the
     // whole set must not be readable as one that covered it and found nothing.
     if report.not_evaluated.is_empty() {
@@ -97,5 +147,22 @@ fn print(name: &str, report: &Report) {
         for skipped in &report.not_evaluated {
             println!("    {}: {}", skipped.id, skipped.why);
         }
+    }
+}
+
+/// What the deposit does not carry, and what that costs a reanalysis. A deposit
+/// missing optional fields is valid and is not as good as one that is not, and
+/// printing this on an accepted deposit is the only way to say both.
+fn completeness(report: &Report) {
+    if report.completeness.is_empty() {
+        return;
+    }
+    println!(
+        "  {} field(s) carry a state rather than a value:",
+        report.completeness.len()
+    );
+    for absent in &report.completeness {
+        println!("    {} is {}", absent.field, absent.state);
+        println!("      without it: {}", absent.without_this_field);
     }
 }
