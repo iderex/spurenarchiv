@@ -110,6 +110,47 @@ What that arrangement does not prove is that an operator still refuses what its
 identifier names. That is one fixture per refusal with a near miss beside it, and
 it is issue #33.
 
+## What the deposit does not carry, and what that costs
+
+Most deposits will be incomplete, so this is the normal path rather than an edge
+case. A deposit that states a field's absence is conforming and is not as good as
+one that carries the value, and the archive has to be able to say both without
+either refusing it or pretending it is equivalent.
+
+Every run prints the fields carrying a state rather than a value, with the state
+and with the field row's own sentence about what a reader cannot do without it.
+That sentence is the one that justified the field's existence in the model, doing
+its second job: what a field is for and what this deposit cannot support are the
+same statement read in two directions.
+
+    detection_efficiency is not_measured
+      without it: An efficiency that falls at low energy suppresses one side of
+      the streaking modulation and biases the retrieved field, and no efficiency
+      curve can be inferred from a single trace.
+
+The sentence is read from the row rather than written into the report, so it
+cannot become a second statement of what the field is for, free to drift from the
+one the model keeps.
+
+`estimated` is in the report, and belongs there for the reason
+`docs/decisions/absence.md` gives: a reader who tests for absence by asking
+whether a number is present passes straight over an estimated value, which is
+the number a reconstruction is most sensitive to.
+
+Under `not_applicable` the sentence describes a loss that does not arise. The
+quantity has no meaning for this measurement, so the field is reported with its
+state and the sentence says what the absence would cost if the quantity existed.
+The state is what carries that difference and the report does not restate it.
+
+The exit status is about conformance and never about completeness. A deposit that
+states thirteen absences exits 0.
+
+`--json` writes the whole report, the verdict, the findings, the completeness and
+the checks that were not evaluated, for the caller that is going to consume it
+rather than read it. The verdict is a field of its own there rather than
+something to infer from an empty finding list, because an empty list and a run
+that judged nothing look the same to a caller counting entries.
+
 ## The version a deposit declares
 
 The deposit declares its schema version and is judged against that version's

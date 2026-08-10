@@ -448,3 +448,137 @@ fn a_document_that_declares_no_version_is_not_judged() {
         other => panic!("expected a refusal naming the missing version, got {other:?}"),
     }
 }
+
+/// The completeness report, against the fixture built to exercise it. A deposit
+/// missing optional fields is valid and is not as good as one that is not, so
+/// the report is what says the second half without refusing the deposit.
+///
+/// The expectation is read out of the fixture rather than written here: every
+/// field the deposit carries in a state other than `present` has to appear, and
+/// nothing else may. A list in the test would drift against the fixture and
+/// would go on passing while the report lost an entry.
+#[test]
+fn every_field_the_incomplete_fixture_states_as_absent_is_in_its_report() {
+    let path = repository().join("fixtures/deposit/accepted-incomplete-deposit.json");
+    let text = std::fs::read_to_string(&path).expect("the incomplete fixture is tracked");
+    let document: Value = serde_json::from_str(&text).expect("the incomplete fixture is JSON");
+
+    let expected: BTreeSet<(String, String)> = document
+        .as_object()
+        .expect("a deposit is an object")
+        .iter()
+        .filter_map(|(field, record)| {
+            let state = record.get("state")?.as_str()?;
+            (state != "present").then(|| (field.clone(), state.to_string()))
+        })
+        .collect();
+    assert!(
+        expected.len() > 5,
+        "the fixture states too few absences to be representative: {expected:?}"
+    );
+
+    let report = validate(&path, &schema_root()).expect("the fixture is judgeable");
+    assert!(
+        report.accepted(),
+        "a deposit that states its absences is conforming, and this one was refused: {:?}",
+        report.findings
+    );
+
+    let reported: BTreeSet<(String, String)> = report
+        .completeness
+        .iter()
+        .map(|absent| (absent.field.clone(), absent.state.clone()))
+        .collect();
+    assert_eq!(
+        reported, expected,
+        "the completeness report and the deposit disagree about which fields carry a state"
+    );
+}
+
+/// The sentence beside each absence is the field row's own, so a reader can
+/// trace it to where the field was argued for. Prose written into the report
+/// would be a second statement of what a field is for, free to drift from the
+/// one the model keeps.
+#[test]
+fn the_consequence_beside_an_absence_is_the_field_rows_own_sentence() {
+    let path = repository().join("fixtures/deposit/accepted-incomplete-deposit.json");
+    let report = validate(&path, &schema_root()).expect("the fixture is judgeable");
+    assert!(!report.completeness.is_empty());
+
+    for absent in &report.completeness {
+        let row_path = schema_root()
+            .join("1.0/fields")
+            .join(format!("{}.json", absent.field.replace('_', "-")));
+        let text = std::fs::read_to_string(&row_path)
+            .unwrap_or_else(|e| panic!("{}: {e}", row_path.display()));
+        let row: Value = serde_json::from_str(&text).expect("a field row is JSON");
+        let sentence = row
+            .get("withoutThisField")
+            .and_then(Value::as_str)
+            .expect("a field row carries the sentence that justifies the field");
+        assert_eq!(
+            absent.without_this_field, sentence,
+            "{} is reported with a sentence that is not its row's",
+            absent.field
+        );
+    }
+}
+
+/// A deposit that carries every field as a value has nothing to report, and the
+/// near miss is what stops the report reaching past what it names.
+#[test]
+fn a_field_that_carries_a_value_is_not_reported_as_absent() {
+    let report = judge(&base());
+    for absent in &report.completeness {
+        assert_ne!(
+            absent.state, "present",
+            "{} carries a value and is in the completeness report",
+            absent.field
+        );
+    }
+}
+
+/// Machine readable as well as printable, proved through the command rather
+/// than through the library, because the caller this clause is about runs the
+/// command.
+#[test]
+fn the_command_writes_the_whole_report_as_json() {
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_deposit-validator"))
+        .arg(repository().join("fixtures/deposit/accepted-incomplete-deposit.json"))
+        .arg("--schema-root")
+        .arg(schema_root())
+        .arg("--json")
+        .output()
+        .expect("the command runs");
+    assert!(
+        output.status.success(),
+        "a conforming deposit exits non-zero"
+    );
+
+    let parsed: Value = serde_json::from_slice(&output.stdout).expect("the output is JSON");
+    let first = parsed
+        .as_array()
+        .and_then(|documents| documents.first())
+        .expect("one document was judged");
+
+    assert_eq!(first.get("judged").and_then(Value::as_bool), Some(true));
+    assert_eq!(first.get("accepted").and_then(Value::as_bool), Some(true));
+    assert_eq!(
+        first.get("schema_version").and_then(Value::as_str),
+        Some("1.0")
+    );
+
+    let report = validate(
+        &repository().join("fixtures/deposit/accepted-incomplete-deposit.json"),
+        &schema_root(),
+    )
+    .expect("the fixture is judgeable");
+    assert_eq!(
+        first
+            .get("completeness")
+            .and_then(Value::as_array)
+            .map(Vec::len),
+        Some(report.completeness.len()),
+        "the command and the library report different numbers of absences"
+    );
+}
