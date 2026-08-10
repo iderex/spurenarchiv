@@ -1,0 +1,54 @@
+# The lint check (#5). Clippy over every target under `tool/`, with its
+# warnings refused.
+#
+# The string `lint` is the interface, chosen once here. `build.yml` carries the
+# reasoning for the job id and the job name being the same string, for the
+# matrix hazard, and for the trigger being `pull_request` alone.
+#
+# `--all-targets` reaches the test files as well as the library and the two
+# binaries. The suite is where this board's fixtures are read and where a
+# conversion between widths is most likely to be written carelessly, so leaving
+# it out would exempt the code that decides whether a guard bites.
+#
+# This check overlaps the build check by construction: clippy reports rustc's
+# own warnings alongside its own, and `build.yml` refuses those too. That is
+# deliberate rather than an oversight. The two answer different questions, one
+# about whether the crate compiles cleanly and one about what clippy thinks of
+# it, and a change that removes clippy from the gate should not silently take
+# the rustc warnings with it.
+name: lint
+
+on:
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    defaults:
+      run:
+        working-directory: tool
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: The pinned toolchain, printed rather than assumed
+        run: |
+          set -euo pipefail
+          rustc --version
+          cargo clippy --version
+
+      - name: Clippy, with its warnings refused
+        run: cargo clippy --locked --all-targets -- -D warnings

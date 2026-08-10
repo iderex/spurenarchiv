@@ -70,8 +70,8 @@ runs, and no reading of this table should turn one into the other.
 | `Audit workflows (zizmor)` | adopted | `.github/workflows/zizmor.yml`, check `Audit workflows (zizmor)` |
 | `dependency-review` | adopted | `.github/workflows/dependency-review.yml`, check `dependency-review` |
 | `Enforce greppable invariants` | adopted | nothing yet, issue #65 |
-| `build` | adapted | nothing yet, issues #5 and #6 |
-| `prettier` | adapted | nothing yet, issue #5 |
+| `build` | adapted | `.github/workflows/build.yml`, `test.yml` and `lint.yml`, checks `build`, `test` and `lint`; the one command that runs them together is issue #6 |
+| `prettier` | adapted | `.github/workflows/format.yml`, check `format`, over Rust source only; Markdown, JSON and YAML are formatted by nothing |
 | `CodeQL` | adapted | nothing yet, issue #66 |
 | `Analyze (csharp)` | dropped | there is no C# here |
 | `ABI floor build` | adapted | nothing yet, issue #34 |
@@ -88,20 +88,29 @@ the shape of a record. What it lints is different; what it is is the same. Issue
 #65 is where the invariants for this board are chosen, and choosing them is the
 work rather than running the linter.
 
-`build` is adapted because there is nothing to compile. On the target board that
-one context carries the restore, the build, the test run and a coverage bar in
-one job. Here the equivalent property is that the tree's own checks all run and
-all pass, which is issue #6's single gate command, and the checks it runs are
-issue #5's. The coverage bar inside that job is not part of this row and is
-treated separately below.
+`build` is adapted because the target board carries the restore, the build, the
+test run and a coverage bar in one context, and here they are separate checks.
+Three of them run: `build` compiles every target with warnings refused, `test`
+runs the suite, `lint` is clippy with its warnings refused, and each reports
+under a name of its own so that a red one says which of the three it was. The
+sentence this paragraph carried before, that there is nothing to compile, was
+true when the map was written and stopped being true when `tool/` landed. The
+single command that runs them all together is still issue #6's, and the coverage
+bar inside that job is not part of this row and is treated separately below.
 
 `prettier` is adapted rather than adopted because the target board runs it over
 `js, html, md, css, scss` and this tree carries none of the first, third or
 fourth of those. What corresponds is a formatter over the file kinds this board
 does carry, which are Markdown, JSON and YAML, and the property is the one that
 made the control worth having: a formatting question is settled by a tool rather
-than in review, so a diff never carries a whitespace argument. Issue #5 holds the
-format check.
+than in review, so a diff never carries a whitespace argument.
+
+Half of that is now in force and the row above says which half. The `format`
+check runs rustfmt over the Rust source, against the pinned toolchain's defaults
+rather than against a house style, so a formatting question about code is
+settled by a tool. Nothing formats the Markdown, the JSON or the YAML, which is
+most of the files this tree holds, so the property this row describes is held
+over the smallest of the file kinds it names.
 
 `CodeQL` is adapted because the control is static analysis for the language the
 artefact is written in, and the language here is fixed by
