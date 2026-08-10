@@ -1,0 +1,16 @@
+# Two builds of one commit have to produce the same bytes, because a number this
+# archive publishes has to be reproducible by somebody who was not there, and a
+# build that differs from itself gives them no way to tell a real difference from
+# a rebuild.
+#
+# Without this, two builds from a clean clone at 46749c0 differed in 24 bytes of
+# 6116864: the COFF TimeDateStamp, the same stamp repeated in three debug
+# directory entries, and a 16-byte signature that links the image to its symbol
+# file. /Brepro replaces all of them with values derived from the input, so the
+# link is a function of what went into it.
+#
+# Scoped to the target it is a flag of. The measurement behind it was made on
+# that target and nothing here has measured any other, so a blanket setting would
+# be asserting a property of platforms nobody has built on.
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-Clink-arg=/Brepro"]
