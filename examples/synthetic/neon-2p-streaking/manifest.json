@@ -1,0 +1,24 @@
+{
+  "file_count": 3,
+  "files": [
+    {
+      "digest": "sha256:957648182e74dc7b30cfa678ee86400954171553525865a9de704ef9c7ddcf0e",
+      "path": "scan-001/metadata.json",
+      "role": "dataset_metadata",
+      "size": 10722
+    },
+    {
+      "digest": "sha256:89d6fe06034056ee7657202367ce02dc6a1cb3b61e0554bf23844b50410e1343",
+      "path": "scan-001/spectrogram.bin",
+      "role": "array",
+      "size": 3936
+    },
+    {
+      "digest": "sha256:fd50b26d747112e3c9e3e1720def402685a69889551a4f879c035bfcf4753e6d",
+      "path": "scan-001/uncertainty.bin",
+      "role": "array",
+      "size": 7872
+    }
+  ],
+  "schema_version": "1.0"
+}

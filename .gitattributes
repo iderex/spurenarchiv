@@ -19,3 +19,11 @@ fixtures/content-address/** -text
 # exists to prove, and one of these fixtures exists to prove a length that is
 # wrong by 64 bytes.
 fixtures/manifest/** -text
+
+# The same reason a third time, for the example deposits. Every file under this
+# directory has its length and its digest recorded in the manifest beside it, so
+# a checkout that rewrote a line ending inside one would break the deposit
+# against its own manifest for a reason that has nothing to do with the deposit.
+# An example is a deposit somebody copies out of this tree and reads elsewhere,
+# so the bytes it arrives as are the bytes it has to leave as.
+examples/** -text
