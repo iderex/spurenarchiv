@@ -176,14 +176,15 @@ distinguishable from a run showing that the same bytes produce the same digests
 on a machine that has never seen this repository.
 
 What it does not check is that any program in this repository computes these
-digests, because there is none:
+digests. There is a program now and it computes no digest at all:
 
-    git ls-files -- tool/ | wc -l
-    0
+    git grep -n -i -e sha256 -e digest -- tool/src/ ; echo "exit=$?"
+    exit=1
 
-The validator in issue #32 and the reader in issue #36 are where a program first
-has to agree with this document, and until then this document and the check
-above are what a reader has instead.
+The validator in issue #32 judges one metadata document and opens nothing beside
+it. The reader in issue #36 is where a program first has to agree with this
+document, and until then this document and the check above are what a reader has
+instead.
 
 Nothing here refuses a deposit. The refusals a deposit meets are the validator's,
 and issues #32 and #33 hold them.
