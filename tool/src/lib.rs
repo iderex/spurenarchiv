@@ -298,14 +298,27 @@ fn field_of(instance_path: &str, problem: &str) -> String {
     }
 }
 
+/// The first deposit key quoted in a message.
+///
+/// Both delimiters, because the two conditions that name a key do not agree on
+/// one: a missing key is reported in double quotes and a key the schema does not
+/// admit in single ones. Reading only the first spelling left the second
+/// reported against the document as a whole, so the message named the key and
+/// the finding did not.
+///
+/// A quoted run carrying a space is not taken. That is what keeps an apostrophe
+/// inside ordinary prose from being read as an opening quote and half a sentence
+/// as a key.
 fn quoted(text: &str) -> Option<String> {
-    let rest = text.split_once('"')?.1;
-    let (inside, _) = rest.split_once('"')?;
-    if inside.is_empty() {
-        None
-    } else {
-        Some(inside.to_string())
-    }
+    ['"', '\''].iter().find_map(|delimiter| {
+        let rest = text.split_once(*delimiter)?.1;
+        let (inside, _) = rest.split_once(*delimiter)?;
+        if inside.is_empty() || inside.contains(char::is_whitespace) {
+            None
+        } else {
+            Some(inside.to_string())
+        }
+    })
 }
 
 /// What the depositor does about it. The keyword that refused is what decides
@@ -472,4 +485,28 @@ pub(crate) fn rows(version_dir: &Path) -> BTreeMap<String, Value> {
         }
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::quoted;
+
+    /// The two spellings the conditions use, and the prose that must not be
+    /// read as one. The second case is why the reader refuses a quoted run
+    /// carrying a space: an apostrophe inside a sentence opens nothing, and
+    /// without the guard half the sentence between two of them is taken for a
+    /// deposit key.
+    #[test]
+    fn a_key_is_read_from_either_spelling_and_prose_is_not() {
+        assert_eq!(
+            quoted(r#""delay_jitter" is a required property"#).as_deref(),
+            Some("delay_jitter")
+        );
+        assert_eq!(
+            quoted("Additional properties are not allowed ('delay_axis_reference_frame' was unexpected)").as_deref(),
+            Some("delay_axis_reference_frame")
+        );
+        assert_eq!(quoted("the parser's view of the document's keys"), None);
+        assert_eq!(quoted("nothing is quoted here"), None);
+    }
 }
