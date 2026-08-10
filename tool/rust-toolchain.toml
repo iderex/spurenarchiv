@@ -1,0 +1,7 @@
+# The pin is a file rather than an instruction, because an instruction is
+# followed by whoever read it. Issue #4 owns this file and the measurement that
+# two builds from a clean clone produce the same bytes; it lands here with the
+# first thing it pins, which is what that issue's own reasoning asks for.
+[toolchain]
+channel = "1.97.0"
+components = ["rustfmt", "clippy"]
