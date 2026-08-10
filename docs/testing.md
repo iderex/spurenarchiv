@@ -5,20 +5,20 @@ to add a fixture for one to run against. The constraints on the default suite ar
 issue #7's and the fixture rules are issue #9's, and they sit in one document
 because the person writing a test meets both in the same minute.
 
-## Nothing in this tree runs a test yet
+## Where the suite is
 
-Said first, because everything below is written before the thing it governs
-exists and a reader who assumes otherwise will go looking for a suite that is not
-there. At the commit this document lands on:
+Under `tool/`, run by `cargo test`, and reported on every pull request by the
+check named `test`. How many files it is spread across is printed rather than
+written here:
 
-    git ls-files -- tool/ | wc -l
-    0
+    git ls-files -- 'tool/tests/*.rs' | wc -l
 
-The tool the suite belongs to is issue #4's and the checks that run it are issue
-#5's. Writing the constraints now is the point rather than an accident of
-ordering: a suite that has already grown a display dependency does not lose it
-again cheaply, and the same holds for a tree that has already grown the habit of
-committing real measurement arrays.
+This document was written before any of that existed and said so in this place,
+which was the point rather than an accident of ordering: a suite that has
+already grown a display dependency does not lose it again cheaply, and the same
+holds for a tree that has already grown the habit of committing real measurement
+arrays. Both rules below were in force before there was anything to enforce them
+against.
 
 ## The three constraints on the default suite
 
@@ -55,16 +55,76 @@ availability rather than the state of the code. A red run then means nothing
 until somebody has investigated, and the investigation happens every time, which
 is how a suite stops being read.
 
-## What refuses a violation of those three today
+## What refuses a violation of those three
 
-Nothing does. There is no suite for such a check to run inside, and the shape the
-rule needs is a test that fails loudly rather than one that passes slowly. Issue
-#7 holds that mechanism, together with the three fixture tests that prove it
-bites: one that needs a display, one that needs elevation and one that opens a
-socket to something outside loopback, each refused by the default suite rather
-than skipped in silence. Until #7 closes, a test that opens a socket lands
-exactly as quietly as one that does not, and this document is what a reader has
-instead of a guard.
+`tool/tests/suite_constraints.rs`, inside the default suite. It reads the source
+of every `.rs` file under `tool/src` and `tool/tests` and refuses two things,
+naming the file and the line.
+
+A test that declares it needs a display, elevation or the network. The
+declaration is one line, `suite-needs:` followed by one of those three words,
+and writing it is what is refused. A word that is none of the three is refused
+as well, so a misspelling cannot turn a declared need into an undeclared one.
+
+A call site that opens a socket, unless the same line carries an address naming
+this machine. A test talking to a helper it started on loopback breaks none of
+the three constraints and is left alone. A call whose address is assembled
+somewhere else carries no such address on the line and is refused, which is the
+safe direction: an address the check cannot read is one it cannot vouch for.
+
+### Why it reads source rather than watching a run
+
+Two of the three cannot be proved by letting a test do the forbidden thing.
+
+A test that asks for administrator rights in order to be caught raises a consent
+prompt on the machine of whoever runs the suite, on every run rather than once,
+which is the habit the constraint exists to break. A test that opens a window
+succeeds on a machine that has a display, so a fixture written that way would
+pass for whoever wrote it and be refused only on the headless machine, which is
+the wrong way round for a fixture. So the refusal happens where such a test is
+declared. Nothing in this mechanism elevates anything, opens a window, or
+touches the network, and the suite's result does not depend on the machine's
+network state.
+
+The network constraint is the one where the source can carry the act itself, so
+its fixture holds a real call and is refused before anything runs it.
+
+### The fixtures
+
+`fixtures/suite/` holds five files that no crate compiles. Three are refused,
+one per constraint, and two are near misses that must not be: a test connecting
+over loopback, and a file that writes about displays and elevation throughout
+and declares a need for neither. The second exists because a guard that refused
+it would be enforcing a vocabulary rather than a constraint, and the first thing
+it would refuse is this document's own explanation of the rule.
+
+Each rule was deleted and the suite watched. Removing the declaration rule
+accepts the display fixture and the elevation fixture. Removing the socket rule
+accepts the network fixture. Removing the loopback exemption refuses the
+loopback near miss. All three turn `each_suite_fixture_gets_the_verdict_its_name_claims`
+red and name the fixture that moved.
+
+### What is still not refused
+
+A socket opened through a helper in another file, or by a crate this tree
+depends on. The check reads the text of this tree, and a dependency's own source
+is not in it. What covers that is the lock file and the review of what is added,
+which is issue #4's, and it is a weaker thing than a check.
+
+A display opened by a library rather than by a call in this tree, for the same
+reason.
+
+Elevation attempted at run time by a test that declared nothing. There is no
+run-time half of that rule at all, and there is deliberately not going to be
+one: observing an elevation request means making it.
+
+A test in the integration harness of issue #8. This check reads `tool/src` and
+`tool/tests`, which is the default suite, and the harness is where a test that
+cannot meet the three constraints goes so that its cost is visible.
+
+Whether a run happened on a machine that actually had no display. That is a
+property of a machine on a day rather than of the tree, and the check makes no
+claim about it.
 
 What the toolchain contributes on its own is a starting point and not a guard.
 `docs/decisions/means.md` records that the default test runner opens no window,
