@@ -1,0 +1,49 @@
+# The format check (#5). It asks rustfmt whether the source under `tool/` is
+# already in the shape rustfmt would put it in, and changes nothing.
+#
+# The string `format` is the interface, chosen once here. `build.yml` carries
+# the reasoning for the job id and the job name being the same string, for the
+# matrix hazard, and for the trigger being `pull_request` alone.
+#
+# This is the row the parity map calls `prettier` on the target gate. The
+# control is the same one, a formatter run in check mode over the tree's own
+# source, and the tool differs because the language does. What it reads is
+# rustfmt's defaults: this tree carries no `rustfmt.toml`, so the shape being
+# required is the one the pinned toolchain ships with and not a house style
+# somebody would have to look up.
+name: format
+
+on:
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    name: format
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    defaults:
+      run:
+        working-directory: tool
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: The pinned toolchain, printed rather than assumed
+        run: |
+          set -euo pipefail
+          rustc --version
+          cargo fmt --version
+
+      - name: Every source file is already formatted
+        run: cargo fmt --all --check

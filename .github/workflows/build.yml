@@ -1,0 +1,82 @@
+# The build check (#5). It compiles the crate under `tool/` and refuses a
+# warning.
+#
+# ## The name is the interface
+#
+# The string `build` is what a ruleset entry will name once #63 makes these
+# required, so it is chosen here and treated as fixed rather than as a label.
+# Three things follow, and they are the same for all four of these workflows.
+#
+# The job id and the job name are the same string. This tree carries two
+# conventions for where a check-run name comes from: `dependency-review.yml`
+# declares no job-level `name:` on purpose, so its check run takes the job id,
+# and the rest set an explicit `name:`, which the check run takes instead.
+# Either convention applied to this file yields `build`, so whichever one the
+# next reader follows, the reported string does not move.
+#
+# A matrix would move it anyway, and that is the hazard worth meeting in the
+# file rather than in a document. A job's check-run name is its name with the
+# matrix values appended in parentheses, so a `build` job that grows a matrix
+# over the platforms #76 names reports `build (ubuntu-latest)` and stops
+# reporting `build` at all. A ruleset requiring `build` would then be requiring
+# a string no run produces, and nothing anywhere would say so. If a matrix is
+# added here, the matrix job takes a different name and one job named `build`
+# depends on it and reports the verdict, so that the required string stays
+# produced by exactly one job.
+#
+# The trigger is `pull_request` alone, where the rest of this tree runs on both
+# a push and a pull request. A check reported by two triggers is satisfied by
+# whichever run reports, and the two are not judging the same thing: the push
+# run judges the branch head and the pull request run judges the merge result.
+# For a check that is going to stand between a change and the default branch,
+# the merge result is the one the gate is asking about.
+#
+# ## Warnings are errors
+#
+# `-D warnings` is on the build rather than only on the lint check. A warning
+# that is allowed to accumulate is a warning nobody reads, and this crate reads
+# depositor-supplied numbers and converts between widths, where the warning that
+# matters is exactly the one that would be lost in the noise.
+name: build
+
+on:
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    defaults:
+      run:
+        working-directory: tool
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # No toolchain action. `tool/rust-toolchain.toml` pins the channel and its
+      # components, and rustup on the runner reads that file, so the version
+      # compiled here is the one the tree names rather than the one an action
+      # was configured with. A second place to state the version is a second
+      # place for it to be wrong.
+      - name: The pinned toolchain, printed rather than assumed
+        run: |
+          set -euo pipefail
+          rustc --version
+          cargo --version
+
+      - name: Compile every target, with warnings refused
+        env:
+          RUSTFLAGS: "-D warnings"
+        run: cargo build --locked --all-targets
