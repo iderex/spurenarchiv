@@ -1,0 +1,478 @@
+{
+  "schema_version": "2.0",
+  "spectrogram": {
+    "state": "present",
+    "value": {
+      "file": "spectrogram.bin",
+      "shape": [
+        5,
+        16
+      ],
+      "element_type": "int32",
+      "byte_order": "little_endian"
+    }
+  },
+  "spectrogram_axis_order": {
+    "state": "present",
+    "value": [
+      "delay",
+      "energy"
+    ]
+  },
+  "spectrogram_value_semantics": {
+    "state": "present",
+    "value": {
+      "quantity_per_pixel": "counts",
+      "per": "bin"
+    }
+  },
+  "axis_bin_convention": {
+    "state": "present",
+    "value": {
+      "delay": "bin_centre",
+      "energy": "bin_centre"
+    }
+  },
+  "unmeasured_pixel_marker": {
+    "state": "present",
+    "value": {
+      "how_marked": "every_pixel_measured"
+    }
+  },
+  "saturated_pixel_marker": {
+    "state": "not_applicable"
+  },
+  "delay_axis_quantity": {
+    "state": "present",
+    "value": "optical_delay"
+  },
+  "delay_jitter": {
+    "state": "present",
+    "value": {
+      "rms": 1.8e-16,
+      "how_determined": "Standard deviation of the interferometer error signal over the scan."
+    }
+  },
+  "delay_reference_point": {
+    "state": "present",
+    "value": "envelope_peak"
+  },
+  "delay_sign_convention": {
+    "state": "present",
+    "value": "xuv_minus_dressing"
+  },
+  "delay_value_uncertainty": {
+    "state": "present",
+    "value": [
+      2e-16,
+      2e-16,
+      2e-16,
+      2e-16,
+      2e-16
+    ]
+  },
+  "delay_values": {
+    "state": "present",
+    "value": [
+      -4e-15,
+      -2e-15,
+      0.0,
+      2e-15,
+      4e-15
+    ]
+  },
+  "delay_zero_definition": {
+    "state": "present",
+    "value": {
+      "condition": "Maximum of the sideband amplitude summed over the first sideband pair.",
+      "how_located": "Parabolic fit to the summed sideband amplitude against stage position."
+    }
+  },
+  "detection_direction": {
+    "state": "present",
+    "value": {
+      "frame": "laboratory, z along the beam, y vertical",
+      "components": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "detection_efficiency": {
+    "state": "present",
+    "value": {
+      "energies": [
+        20.0,
+        40.0,
+        60.0,
+        80.0
+      ],
+      "values": [
+        0.31,
+        0.29,
+        0.26,
+        0.22
+      ],
+      "how_determined": "Measured against a calibrated photodiode at four photon energies and interpolated."
+    }
+  },
+  "detector_angular_acceptance": {
+    "state": "present",
+    "value": {
+      "half_angle": 0.11,
+      "how_determined": "Aperture diameter and flight distance."
+    }
+  },
+  "detector_background": {
+    "state": "present",
+    "value": {
+      "subtracted": {
+        "what_was_subtracted": "A constant per-pixel dark level averaged over 500 shots with the XUV blocked.",
+        "how_obtained": "Recorded immediately before the scan under otherwise identical settings.",
+        "clipped_at_zero": false
+      },
+      "dark_count_rate": 0.004
+    }
+  },
+  "detector_dead_time": {
+    "state": "present",
+    "value": {
+      "value": 1.2e-08,
+      "pile_up_correction_applied": false,
+      "how_determined": "Manufacturer specification for the constant fraction discriminator."
+    }
+  },
+  "detector_noise_parameters": {
+    "state": "not_applicable"
+  },
+  "detector_saturation": {
+    "state": "present",
+    "value": {
+      "gain_behaviour": "Linear to 4000 counts per pixel per shot, compressing above it.",
+      "any_pixel_saturated": false,
+      "saturation_level": 4000.0
+    }
+  },
+  "detector_type": {
+    "state": "present",
+    "value": {
+      "kind": "time_of_flight",
+      "configuration": "0.5 m field-free drift, 300 V retardation, microchannel plate with a phosphor screen."
+    }
+  },
+  "dressing_carrier_envelope_phase": {
+    "state": "present",
+    "value": {
+      "stabilised": true,
+      "tagging": "single_value",
+      "value": 0.0
+    }
+  },
+  "dressing_centre_wavelength": {
+    "state": "present",
+    "value": 7.9e-07
+  },
+  "dressing_peak_intensity": {
+    "state": "present",
+    "value": {
+      "value": 4.2e+16,
+      "determination_method": "focal_spot_energy_duration",
+      "how_determined": "Pulse energy at the target, knife-edge focal spot, and the duration in this record."
+    }
+  },
+  "dressing_polarisation": {
+    "state": "present",
+    "value": {
+      "state": "linear",
+      "direction": {
+        "frame": "laboratory, z along the beam, y vertical",
+        "components": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "dressing_pulse_duration": {
+    "state": "present",
+    "value": {
+      "value": 5e-15,
+      "measure": "fwhm_intensity",
+      "how_determined": "Second harmonic frequency-resolved optical gating on a split-off arm."
+    }
+  },
+  "dressing_spectrum": {
+    "state": "present",
+    "value": {
+      "wavelengths": [
+        7e-07,
+        7.5e-07,
+        8e-07,
+        8.5e-07
+      ],
+      "spectral_intensities": [
+        0.12,
+        0.71,
+        1.0,
+        0.34
+      ]
+    }
+  },
+  "inter_scan_scatter": {
+    "state": "present",
+    "value": {
+      "statistic": "standard_deviation",
+      "scan_count": 12,
+      "how_computed": "Per-pixel standard deviation across the twelve scans that were summed."
+    }
+  },
+  "noise_model": {
+    "state": "present",
+    "value": "poisson_from_counts_and_shots"
+  },
+  "stage_to_delay_relation": {
+    "state": "not_applicable"
+  },
+  "completeness_level": {
+    "state": "present",
+    "value": "counts"
+  },
+  "shots_per_point": {
+    "state": "present",
+    "value": [
+      2000,
+      2000,
+      2000,
+      2000,
+      2000
+    ]
+  },
+  "acquisition_order": {
+    "state": "present",
+    "value": {
+      "kind": "randomised",
+      "index_sequence": [
+        3,
+        0,
+        4,
+        1,
+        2
+      ],
+      "description": "Delay points visited in a fixed pseudo-random order, the same order in every scan."
+    }
+  },
+  "scan_combination": {
+    "state": "present",
+    "value": {
+      "scan_count": 12,
+      "how_combined": "sum",
+      "span": 5400.0,
+      "how_determined": "Wall-clock span from the first shot of the first scan to the last shot of the twelfth."
+    }
+  },
+  "monitoring_channels": {
+    "state": "present",
+    "value": [
+      {
+        "name": "dressing pulse energy",
+        "recorded_per": "delay_point",
+        "file": "monitor-energy.bin",
+        "description": "Photodiode after the compressor, averaged over the shots at each point."
+      }
+    ]
+  },
+  "acquisition_timestamps": {
+    "state": "present",
+    "value": {
+      "start": "2026-02-11T09:14:00Z",
+      "point_offsets": [
+        0.0,
+        1080.0,
+        2160.0,
+        3240.0,
+        4320.0
+      ]
+    }
+  },
+  "energy_axis_quantity": {
+    "state": "present",
+    "value": "kinetic_energy"
+  },
+  "energy_calibration": {
+    "state": "present",
+    "value": {
+      "form": "flight_time_analytic",
+      "parameters": {
+        "flight_length": 0.5,
+        "time_zero": 1.4e-08,
+        "electron_mass_source": "CODATA 2022"
+      },
+      "retardation_voltage": 300.0,
+      "uncertainty": {
+        "value": 0.08,
+        "how_obtained": "Spread of the fitted photoline centre across the four calibration gases."
+      },
+      "description": "Kinetic energy from flight time by the field-free relation with a retarding stage, fitted on four known photolines."
+    }
+  },
+  "calibration_reference": {
+    "state": "present",
+    "value": {
+      "species": "Ne",
+      "transition": "2p photoline at 90 eV photon energy",
+      "accepted_value": 21.56,
+      "source": "NIST Atomic Spectra Database, ionisation energies, retrieved 2026-02-11."
+    }
+  },
+  "spectrometer_resolution": {
+    "state": "present",
+    "value": {
+      "energies": [
+        20.0,
+        50.0,
+        80.0
+      ],
+      "widths": [
+        0.18,
+        0.44,
+        0.71
+      ],
+      "measure": "fwhm",
+      "how_determined": "Width of the argon 3p photoline at three photon energies, deconvolved from the source bandwidth.",
+      "uncertainty": [
+        0.03,
+        0.05,
+        0.08
+      ]
+    }
+  },
+  "transmission_function": {
+    "state": "present",
+    "value": {
+      "energies": [
+        20.0,
+        40.0,
+        60.0,
+        80.0
+      ],
+      "values": [
+        1.0,
+        0.94,
+        0.86,
+        0.75
+      ],
+      "how_determined": "Ratio of measured to tabulated branching ratios across four photolines in one gas."
+    }
+  },
+  "instrument": {
+    "state": "present",
+    "value": "Attosecond beamline, streaking end station, spectrometer arm B."
+  },
+  "facility": {
+    "state": "present",
+    "value": "Institute for Ultrafast Optics, laboratory 2."
+  },
+  "measurement_date": {
+    "state": "present",
+    "value": "2026-02-11"
+  },
+  "publication_reference": {
+    "state": "present",
+    "value": [
+      {
+        "identifier_type": "doi",
+        "identifier": "10.0000/spurenarchiv.example"
+      }
+    ]
+  },
+  "converter": {
+    "state": "present",
+    "value": {
+      "conversion": {
+        "name": "messstube-export",
+        "version": "0.4.2",
+        "code_reference": "v0.4.2",
+        "invocation": "messstube-export --format spurenarchiv-1.0 --no-resample",
+        "source_export_checksum": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "conversion_date": "2026-02-14"
+      },
+      "description": "Straight relabelling of the acquisition program's binary dump; no arithmetic on the array."
+    }
+  },
+  "processing_history": {
+    "state": "present",
+    "value": []
+  },
+  "target_species": {
+    "state": "present",
+    "value": "Ne"
+  },
+  "target_composition": {
+    "state": "present",
+    "value": {
+      "components": [
+        {
+          "species": "Ne",
+          "fraction": 0.997
+        },
+        {
+          "species": "N2",
+          "fraction": 0.003
+        }
+      ],
+      "how_determined": "Residual gas analyser on the chamber during the scan."
+    }
+  },
+  "target_shells": {
+    "state": "present",
+    "value": [
+      {
+        "shell": "Ne 2p",
+        "threshold": 21.56,
+        "source": "NIST Atomic Spectra Database, ionisation energies, retrieved 2026-02-11."
+      },
+      {
+        "shell": "Ne 2s",
+        "threshold": 48.47,
+        "source": "NIST Atomic Spectra Database, ionisation energies, retrieved 2026-02-11."
+      }
+    ]
+  },
+  "target_number_density": {
+    "state": "estimated",
+    "value": {
+      "value": 4e+20,
+      "how_determined": "Backing pressure and nozzle geometry, no in-situ measurement."
+    },
+    "basis": "A typical interaction-region density for this nozzle at this backing pressure; nothing was measured in the interaction region itself."
+  },
+  "target_jet_geometry": {
+    "state": "present",
+    "value": {
+      "description": "Continuous gas jet from a 100 micrometre nozzle, crossed at right angles 1 mm below the nozzle.",
+      "nozzle_diameter": 0.0001,
+      "interaction_length": 0.0003
+    }
+  },
+  "target_resonances": {
+    "state": "present",
+    "value": []
+  },
+  "subtracted_background_variance": {
+    "state": "present",
+    "value": {
+      "how_obtained": "Variance of the same 500 dark shots, per pixel, averaged over the array.",
+      "value": 0.0041
+    }
+  },
+  "uncertainty_array": {
+    "state": "present",
+    "value": {
+      "method": "poisson_from_counts",
+      "file": "uncertainty.bin",
+      "how_computed": "Square root of the summed counts per pixel, before any normalisation."
+    }
+  }
+}
