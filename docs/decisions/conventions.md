@@ -7,9 +7,9 @@ Status: decided. Issue #14.
 Every physical quantity in the model has one internal representation, stated
 below. A deposit states the unit and the convention of every value it carries.
 Nothing is inherited from a default, with one exception that is named and argued
-at the end rather than left to be discovered. A value whose unit or convention is
+at the end and not left to be discovered. A value whose unit or convention is
 not stated is refused, per field, and the field-by-field answer is the table in
-this record rather than a general sentence.
+this record and not a general sentence.
 
 Conversion into the internal representation happens in exactly one place in the
 tool and nowhere else.
@@ -39,7 +39,7 @@ attoseconds are permitted declared units on the way in and are exact multiples.
 **Energy.** Electronvolts, and this is the named departure from SI. It is taken
 because since the 2019 redefinition of the SI the elementary charge is exact by
 definition, so the electronvolt is an exact multiple of the joule and the
-departure costs no uncertainty at all. It is taken rather than declined because
+departure costs no uncertainty at all. It is taken and not declined because
 every published number in this field is in electronvolts, and converting on the
 way in and back out again on the way to every reader adds two crossings for no
 benefit. Photon energies, kinetic energies, ionisation thresholds and energy
@@ -59,7 +59,7 @@ system every other quantity is in, which is the condition the paragraph above
 says makes a dimensional check impossible.
 
 **Number density.** Inverse cubic metres. The target density in the interaction
-region is the quantity this covers, and it is here rather than left to follow
+region is the quantity this covers, and it is here instead of left to follow
 from the general rule because a quantity derived somewhere else is a quantity two
 rows can derive differently. Densities in this field are written per cubic
 centimetre far more often than per cubic metre, so the factor of a million is a
@@ -67,12 +67,12 @@ crossing most deposits carrying a density will make, and it is exact and applied
 in the same one place as the others.
 
 **Pressure.** Pascals. No field in the model carries a pressure today, and this
-line fixes the representation ahead of the field rather than creating one. It is
+line fixes the representation ahead of the field instead of creating one. It is
 written now because the field it is waiting for is predictable: a depositor who
 has a backing pressure and no density has the number that most target densities
 were estimated from, and the units that number is written in are millibars and
-torr rather than pascals. Fixing it here costs one line. Leaving it costs a row
-that arrives with its own answer, which is the drift this section exists against.
+torr and not pascals. Fixing it here costs one line. Leaving it costs a row
+that arrives with its own answer, which is the drift this rule prevents.
 
 **Field direction.** A unit vector in a stated frame, together with the
 definition of the vector potential given below. Directions are not stored as
@@ -103,7 +103,7 @@ The internal delay is defined as a subtraction that is written down:
     delay = (arrival time of the XUV pulse) - (reference time of the dressing field)
 
 so a positive delay means the XUV arrives after the dressing field's reference
-time. The sign is then a consequence of an equation rather than a thing to
+time. The sign is then a consequence of an equation and not a thing to
 remember, and a reader who has forgotten the convention can re-derive it from
 this line instead of guessing.
 
@@ -117,7 +117,7 @@ quantity most measurements do not stabilise.
 
 A deposit declares which convention its own axis was recorded in. It is not
 permitted to omit it, and a deposit whose delay sign convention is absent is
-refused rather than assumed to match this one. The reason is the one the issue
+refused instead of assumed to match this one. The reason is the one the issue
 gives and it is worth restating: the two conventions are mirror images, the
 reconstructed chirp changes sign between them, and a default is precisely how a
 wrong one enters without anybody choosing it. An axis in the other convention is
@@ -135,7 +135,7 @@ optical delay by twice the movement divided by the speed of light. A trace
 archived with the factor left out is wrong by exactly two on its time axis, every
 duration derived from it is wrong by two, and nothing about the array looks wrong.
 Geometries where the factor is not two exist, which is the reason the relation is
-declared rather than the factor being hard-coded here.
+declared, not the factor hard-coded here.
 
 Where the depositor has stage positions, the relation is a required field: the
 geometry factor, the sign, and the position that corresponds to zero delay. Both
@@ -202,7 +202,7 @@ where e is the elementary charge as a positive number. That is the whole
 convention: the momentum shift is opposite in direction to the vector potential at
 the instant of release, and everything derived from the streaking trace inherits
 its sign from those two lines. They are written here so that a reader can check
-the sign rather than recall it, and so that a change to it is a visible change to
+the sign instead of recalling it, and so that a change to it is a visible change to
 this record.
 
 What the deposit declares instead is the geometry the sign is observed through,

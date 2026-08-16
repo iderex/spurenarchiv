@@ -8,13 +8,13 @@ because the person writing a test meets both in the same minute.
 ## Where the suite is
 
 Under `tool/`, run by `cargo test`, and reported on every pull request by the
-check named `test`. How many files it is spread across is printed rather than
+check named `test`. How many files it is spread across is printed and not
 written here:
 
     git ls-files -- 'tool/tests/*.rs' | wc -l
 
 This document was written before any of that existed and said so in this place,
-which was the point rather than an accident of ordering: a suite that has
+which was the point and not an accident of ordering: a suite that has
 already grown a display dependency does not lose it again cheaply, and the same
 holds for a tree that has already grown the habit of committing real measurement
 arrays. Both rules below were in force before there was anything to enforce them
@@ -51,7 +51,7 @@ writing the suite as though it had it.
 ### No network
 
 A suite whose result depends on a remote service reports that service's
-availability rather than the state of the code. A red run then means nothing
+availability and not the state of the code. A red run then means nothing
 until somebody has investigated, and the investigation happens every time, which
 is how a suite stops being read.
 
@@ -77,7 +77,7 @@ safe direction: an address the check cannot read is one it cannot vouch for.
 Two of the three cannot be proved by letting a test do the forbidden thing.
 
 A test that asks for administrator rights in order to be caught raises a consent
-prompt on the machine of whoever runs the suite, on every run rather than once,
+prompt on the machine of whoever runs the suite, on every run and not once,
 which is the habit the constraint exists to break. A test that opens a window
 succeeds on a machine that has a display, so a fixture written that way would
 pass for whoever wrote it and be refused only on the headless machine, which is
@@ -95,7 +95,7 @@ its fixture holds a real call and is refused before anything runs it.
 one per constraint, and two are near misses that must not be: a test connecting
 over loopback, and a file that writes about displays and elevation throughout
 and declares a need for neither. The second exists because a guard that refused
-it would be enforcing a vocabulary rather than a constraint, and the first thing
+it would be enforcing a vocabulary and not a constraint, and the first thing
 it would refuse is this document's own explanation of the rule.
 
 Each rule was deleted and the suite watched. Removing the declaration rule

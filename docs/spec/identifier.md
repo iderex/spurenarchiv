@@ -26,7 +26,7 @@ That is the identity. Nothing below replaces it, and the store, the manifest and
 any comparison of two copies use the digest and never the form this document
 adds.
 
-## The problem this document exists for
+## Why a 71-character identity cannot be the citable form
 
 The identity is 71 characters:
 

@@ -57,9 +57,9 @@ A depositor checks their own deposit before sending it, and the thing they run
 has to be one file they downloaded. Rust compiles to a native executable with no
 runtime to install, no interpreter, no package manager and no dependency tree on
 the target machine, and the release artefacts in issue #76 are the platforms this
-compiles for rather than the platforms an interpreter happens to exist on.
+compiles for, not the platforms an interpreter happens to exist on.
 
-The cost sits on this board rather than on the depositor, which is the trade being
+The cost sits on this board and not on the depositor, which is the trade being
 made: cross-compilation, one build per named platform, and a test matrix that has
 to keep every one of them working. Which platforms are named is entry 9 of issue
 #1 and is open.
@@ -79,7 +79,7 @@ Where the container is HDF5, the path is the `hdf5` crate binding the C library,
 and the cost is a C library on the build machine and a decision about whether it
 is vendored or found. That cost is real, it is the same cost every language pays
 for HDF5 except the ones whose ecosystem hides it, and it is a cost of the
-container rather than of the language. What this record fixes is that neither
+container and not of the language. What this record fixes is that neither
 outcome requires anybody here to hand-write a format parser, which was the line
 issue #2 asked about.
 
@@ -87,14 +87,14 @@ issue #2 asked about.
 
 `Cargo.lock` is tracked, it names an exact version and a hash for every
 dependency in the graph, and the build runs in the mode that refuses to resolve
-anything the lock does not already name rather than quietly updating it. A drift
+anything the lock does not already name instead of quietly updating it. A drift
 between the manifest and the lock then fails at build time and names the file,
 instead of appearing months later as a difference nobody can explain.
 
 The reverse direction matters as much and is easy to lose. A build that rewrites
 the lock as a side effect leaves the working tree dirty and the rewritten pins
 are the evidence for what drifted, so the locked mode is the normal mode for
-every route rather than an extra flag somebody remembers on the release build.
+every route and not an extra flag somebody remembers on the release build.
 
 Rust's compilation is deterministic given a fixed toolchain version, a fixed
 dependency set and a fixed set of paths, and the remaining sources of difference
@@ -113,7 +113,7 @@ rather than something recovered later. Nothing in the toolchain opens a window,
 binds a socket or asks for a privilege on its own, and a test that does either is
 a test somebody wrote that way.
 
-Property testing is `proptest`, which is a dependency rather than part of the
+Property testing is `proptest`, which is a dependency and not part of the
 toolchain, and that is the same posture as every language here except one.
 
 Coverage-guided fuzzing is the one line where the answer is worse than the

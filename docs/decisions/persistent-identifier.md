@@ -7,7 +7,7 @@ Status: decided. Issue #40.
 This board records persistent identifiers. It does not mint them, and it never
 writes a string in a registered namespace it does not control.
 
-A registration is a pointer, held beside the dataset rather than inside it,
+A registration is a pointer, held beside the dataset and not inside it,
 between an identifier some registration agency resolves and the content-derived
 identifiers `identity.md` already gives every dataset. Where nothing has been
 registered, no such pointer exists and no slot for one is filled with something
@@ -54,7 +54,7 @@ about the deposit says so.
 
 It is the same circularity `identity.md` already names for a document containing
 its own digest, arriving one step further out, and the same answer follows: the
-pointer lives where the digests live rather than inside the bytes they cover.
+pointer lives where the digests live and not inside the bytes they cover.
 
 Two ways around it were available and both are worse.
 
@@ -118,7 +118,7 @@ is needed before registration, it is the version identifier, which is not shaped
 like anything a registry resolves and is verifiable by hand.
 
 No empty registration record. Where nothing has been registered, there is no
-record, rather than a record with an identifier field waiting to be filled in.
+record, and not a record with an identifier field waiting to be filled in.
 The two look the same in a listing and only one of them can be filled in wrongly.
 
 ## A deposit that arrives already carrying an identifier
@@ -141,7 +141,7 @@ Whether the identifier resolves is not checked. Checking means a network call fr
 the operator's machine, the network boundary is issue #49 and is not yet drawn,
 and a failure would say more about the operator's connection than about the
 deposit. The identifier is recorded as the depositor asserted it, and that it is
-an assertion rather than a verified fact is written into the record beside it.
+an assertion and not a verified fact is written into the record beside it.
 
 ## How the local scheme maps onto the two-level scheme
 

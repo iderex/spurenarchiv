@@ -4,7 +4,7 @@ This is the governing document for the model. It states the rule a field has to
 pass to be in the model at all, the three requirement states and what each one
 means for the validator, where a row lives, and what refuses a row that skipped
 the rule. It does not say which fields exist. That is the field-by-field issues
-under #21, and each of them adds rows here rather than editing this document.
+under #21, and each of them adds rows here instead of editing this document.
 
 `docs/decisions/layout.md` is what puts this directory beside `schema/` rather
 than inside it, and it is worth reading before adding a field: the schema is
@@ -26,19 +26,19 @@ filled in. The pressure to add fields does not arrive as one bad proposal. It
 arrives later, one reasonable request at a time, from depositors who want to
 record something their apparatus does, and every one of those requests is easy to
 grant on its own. The sentence is what a request has to pass, and it is written
-down here so that refusing one is a rule being applied rather than a person being
+down here so that refusing one is a rule being applied and not a person being
 difficult.
 
 The sentence is part of the field's definition and lives in the row, not in a
 comment beside it. `docs/decisions/schema-language.md` is where that was decided
 and it names the keyword: `withoutThisField`, spelled in the casing JSON Schema's
-own keywords use rather than in the casing of a deposit key, because it is a
+own keywords use, not the casing of a deposit key, because it is a
 keyword of the schema and never appears in a deposit.
 
 ## The three requirement states
 
 Each row declares one of three, and each means something specific to the
-validator rather than something for a person to interpret.
+validator and not something for a person to interpret.
 
 `required` means a deposit without the field is refused.
 
@@ -48,7 +48,7 @@ zero and is not the same as not applicable, which is what that record exists to
 keep apart.
 
 `conditional` means required when another field takes a particular value, and it
-is the common case in this model rather than the exotic one. An array whose axis
+is the common case in this model and not the exotic one. An array whose axis
 is a kinetic energy requires the calibration that produced it; the same array in
 time of flight does not. A row in this state names its condition in
 `requiredWhen`, and a row that does not is refused, because a condition that
@@ -67,9 +67,9 @@ record names it, or the string `none` where the field is not a physical quantity
 at all.
 
 Nothing refuses a quantity that record does not name. Making the check enumerate
-the quantities would put the list in a third place and drift against the record
-in exactly the way this section exists to avoid, so what catches an invented
-quantity is a person reading the row against the record.
+the quantities would put the list in a third place, where it would drift against
+the record, so what catches an invented quantity is a person reading the row
+against the record.
 
 ## What travels with a copy
 
@@ -83,9 +83,9 @@ is a reanalyst's disk, a benchmark export and any node an operator federates to,
 and no later deletion reaches those copies. `local` means it stays on the host.
 Every row in the model today is `published`, because every field in it is a
 measurement, and the record puts what the archive knows about a person in a
-separate store rather than in the container.
+separate store and not in the container.
 
-The marking is on the row rather than in a list beside the schema, for the reason
+The marking is on the row and not in a list beside the schema, for the reason
 `docs/decisions/absence.md` gives about parallel structures: a list can disagree
 with the thing it describes and can be dropped by a writer that never heard of
 it.

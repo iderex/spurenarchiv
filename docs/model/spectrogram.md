@@ -14,7 +14,7 @@ not restated here.
 
 `docs/decisions/container.md` already fixed what an array file holds, which is
 the values and nothing else, with the shape, the element type and the byte order
-in the metadata rather than in a header on the bytes. This document is where
+in the metadata and not in a header on the bytes. This document is where
 those become fields, and where the conventions that are not recoverable from the
 values are settled.
 
@@ -22,7 +22,7 @@ values are settled.
 
 `spectrogram` names the file, the shape, the element type and the byte order.
 
-It is one record rather than four fields because none of the four is usable
+It is one record and not four fields because none of the four is usable
 without the other three. A shape with no element type does not say how many bytes
 a pixel is. An element type with no byte order is the one place a read goes wrong
 on a machine of the other endianness, and it is silent when it does, which is
@@ -30,7 +30,7 @@ on a machine of the other endianness, and it is silent when it does, which is
 neither is a pointer to bytes nobody can divide up.
 
 The element type comes from a small fixed set. That is `container.md`'s
-requirement rather than this document's preference, and the reason it is a set
+requirement, not a preference expressed here, and the reason it is a set
 rather than a free string is that a reader implements the set: a deposit naming
 a type nobody has implemented is a deposit that does not read, and it is better
 refused when it is written than discovered when it is cited. An integer array of
@@ -42,7 +42,7 @@ any number, because `docs/decisions/dataset-unit.md` fixes a dataset as one
 streaking scan carrying one spectrogram, and this row types that array as two
 dimensional. A measurement that varied a third parameter is not something version
 1.0 expresses, and admitting a third index would be a change to what an existing
-deposit means rather than an addition to it, which is issue #34's question and
+deposit means and not an addition to it, which is issue #34's question and
 not this document's.
 
 ## The axis order, and why one order rather than a declaration of any
@@ -51,7 +51,7 @@ not this document's.
 energy or time axis. It is written slowest-varying index first, and version 1.0
 admits `["delay", "energy"]` and nothing else.
 
-The first half of that is `container.md`'s: the order is a field rather than a
+The first half of that is `container.md`'s: the order is a field and not a
 convention, so a reader reads it instead of assuming it. The second half is this
 document's, and it is the part worth arguing.
 
@@ -99,19 +99,19 @@ counts are the only one of the four that brings its own statistics with it.
 all. This field is not a second copy of that. The level says what survived; this
 says what one number means, and a deposit at `counts` whose values are means over
 shots is a deposit those two fields disagree about, which is a thing a reanalyst
-can see rather than a thing they inherit.
+can see instead of a thing they inherit.
 
 The second is what the value is per: the bin, or a unit of the axis.
 `docs/decisions/conventions.md` requires that answer and requires the bin widths
 alongside it when a density is declared, because turning counts per bin into
 counts per electronvolt is a division by the width of each bin, and a spectrum
 divided by nothing has the wrong shape and the right axis labels. The widths sit
-inside this record rather than in a field of their own so that the row refuses a
+inside this record and not in a field of their own so that the row refuses a
 density with no widths, and refuses widths beside a per-bin value in the same
 breath. A width beside a value it did not divide is a number a later reader will
 use.
 
-`arbitrary_units` is admitted rather than refused. A trace whose absolute scale
+`arbitrary_units` is admitted and not refused. A trace whose absolute scale
 was lost in an acquisition program is still a trace worth archiving, and the
 alternative to admitting it is a depositor who writes `counts` because the form
 would not take the truth. What it costs is stated in the row's sentence and in
@@ -125,7 +125,7 @@ bin or its edge. `docs/decisions/conventions.md` named this question, declined t
 answer it there and handed it here by name, so that its absence from that record
 would not read as an oversight.
 
-It is per axis rather than one answer for both because the two axes acquire their
+It is per axis and not one answer for both because the two axes acquire their
 coordinates differently. Delay points are stage positions the scan visited, which
 are centres by construction. Energy bins that came from a digitiser's time bins
 have edges, and relabelling those edges from times of flight to kinetic energies
@@ -137,7 +137,7 @@ Getting it wrong is a half-bin shift. That is not a rounding error on this
 measurement: it moves the retrieved delay zero by half a step, and a delay zero
 is what a retrieved offset is quoted against when two measurements are compared.
 Nothing in the array distinguishes the two conventions, which is why the answer
-has to be carried rather than inferred.
+has to be carried, not inferred.
 
 An axis declared as `bin_edge` carries one more coordinate than that axis has
 bins. That is a comparison between an array's length and a number elsewhere in
@@ -147,7 +147,7 @@ the document, so it is not something this schema performs, and it is in
 ## A pixel that was never measured
 
 `unmeasured_pixel_marker` says how the array marks a pixel that carries no
-measurement, and it is required rather than optional.
+measurement, and it is required and not optional.
 
 `docs/decisions/absence.md` puts the rule one level up: an unknown is not a zero.
 Inside an array the same defect has no absence state to carry it, because a
