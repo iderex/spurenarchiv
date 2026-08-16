@@ -1,7 +1,7 @@
 # Quality parity with the target gate
 
 The target is the merge gate of `iderex/jellyfin-plugin-sso`. Naming a target
-rather than inventing a standard here is deliberate: a gate assembled from first
+instead of inventing a standard here is deliberate: a gate assembled from first
 principles ends up matching whatever this board found easy, and the point of
 parity is to be held to something that was not chosen for convenience.
 
@@ -13,7 +13,7 @@ has no check for, and that issue is where it lands.
 ## What is in force here, before anything below is read
 
 Nothing on this board's own gate requires a status check. Read out of the
-ruleset rather than remembered:
+ruleset and not remembered:
 
     gh api repos/iderex/spurenarchiv/rulesets --jq '.[] | "\(.id) \(.name)"'
     20528564 gate
@@ -27,11 +27,11 @@ So every check named in the map's right-hand column runs on a pull request and
 none of them stops a merge. A row saying a control is adopted is a statement that
 the check exists and runs, and it is not a statement that the merge waits for it.
 Issue #63 is where the checks in this tree become required on the default branch,
-and until it lands the parity claimed here is parity of coverage rather than
+and until it lands the parity claimed here is parity of coverage and not
 parity of enforcement.
 
 That distinction is the one this document is most likely to be misread on, which
-is why it is at the top rather than in a footnote.
+is why it is at the top and not in a footnote.
 
 ## What the target gate requires, derived rather than remembered
 
@@ -45,7 +45,7 @@ is why it is at the top rather than in a footnote.
      "Enforce greppable invariants","Reject Trojan Source Unicode","Audit workflows (zizmor)",
      "prettier","dependency-review"]
 
-Run on 2026-08-09. That set moves. Re-run the commands rather than citing this
+Run on 2026-08-09. That set moves. Re-run the commands instead of citing this
 document, and where the output has moved, this map is what is out of date.
 
 ## How to read a row
@@ -80,13 +80,13 @@ runs, and no reading of this table should turn one into the other.
 
 ## The reasoning, per deviation
 
-`Enforce greppable invariants` is adopted rather than adapted because the control
+`Enforce greppable invariants` is adopted and not adapted because the control
 transfers unchanged: it is a lint over the tree's own text for patterns a
 reviewer would have to remember, and this board has invariants of that kind
 already, including the ones its own documents state about paths, spellings and
 the shape of a record. What it lints is different; what it is is the same. Issue
 #65 is where the invariants for this board are chosen, and choosing them is the
-work rather than running the linter.
+work instead of running the linter.
 
 `build` is adapted because the target board carries the restore, the build, the
 test run and a coverage bar in one context, and here they are separate checks.
@@ -98,7 +98,7 @@ true when the map was written and stopped being true when `tool/` landed. The
 single command that runs them all together is still issue #6's, and the coverage
 bar inside that job is not part of this row and is treated separately below.
 
-`prettier` is adapted rather than adopted because the target board runs it over
+`prettier` is adapted and not adopted because the target board runs it over
 `js, html, md, css, scss` and this tree carries none of the first, third or
 fourth of those. What corresponds is a formatter over the file kinds this board
 does carry, which are Markdown, JSON and YAML, and the property is the one that
@@ -107,7 +107,7 @@ than in review, so a diff never carries a whitespace argument.
 
 Half of that is now in force and the row above says which half. The `format`
 check runs rustfmt over the Rust source, against the pinned toolchain's defaults
-rather than against a house style, so a formatting question about code is
+and not against a house style, so a formatting question about code is
 settled by a tool. Nothing formats the Markdown, the JSON or the YAML, which is
 most of the files this tree holds, so the property this row describes is held
 over the smallest of the file kinds it names.
@@ -126,7 +126,7 @@ matrix language, and there is no C# in this tree:
     0
 
 A row that dropped it as not relevant would be saying nothing, so the reason is
-the measurement rather than the judgement. If this board ever grows a C# surface,
+the measurement and not the judgement. If this board ever grows a C# surface,
 the row that returns is `CodeQL` above and not this one.
 
 `ABI floor build` is the row where the target's control and this board's have the
@@ -165,7 +165,7 @@ they are marked as what they are.
 | An end-to-end harness | no | adapted | nothing yet, issue #8 |
 
 Scorecard here is adopted and its triggers are narrower than the map's other
-adopted rows, which is worth saying rather than leaving in the table. It runs on
+adopted rows, which is worth saying instead of leaving it in the table. It runs on
 a push to the default branch, on a schedule and when the ruleset changes, and not
 on a pull request:
 

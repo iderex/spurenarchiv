@@ -168,7 +168,7 @@ That number is printed and not used. Whether the interface treats the quotes as 
 phrase or as a bag of words was not established, and a search that treats them as
 a bag of words returns a much larger set than the phrase would. An inflated
 denominator divided into a small numerator produces a ratio that flatters the
-claim this document exists to test, which is the wrong direction to be wrong in.
+claim under test, which is the wrong direction to be wrong in.
 A ratio against a denominator whose meaning is unverified is not quoted here.
 
 Establishing a real denominator needs an interface with checkable phrase

@@ -1,7 +1,7 @@
 # What this archive holds about you
 
-This is written for the person the data is about rather than for a lawyer, and
-it describes what the software does rather than what anybody intends. Where a
+This is written for the person the data is about and not for a lawyer, and
+it describes what the software does, not what anybody intends. Where a
 sentence is enforced by a check, the check is named. Where nothing enforces it,
 the sentence says so. Both kinds are in here and the second kind is more common
 today than the first.
@@ -21,7 +21,7 @@ Nothing in this archive sends anything anywhere on its own.
 
 ## The two stores, and why there are two
 
-The measurement and the people are two stores rather than two sections of one
+The measurement and the people are two stores and not two sections of one
 file.
 
 A dataset container holds the physics and a short, named set of attribution
@@ -62,7 +62,7 @@ Four rows are published and four are local, and the published four are the
 attribution. Nothing else about a person is ever put in a container.
 
 A personal e-mail address is never published. `contact_address` is published only
-where the depositor supplies an address that belongs to a role rather than to a
+where the depositor supplies an address that belongs to a role and not to a
 person, and where they supply a personal address instead it is stored local and
 the container carries no contact field at all.
 
@@ -73,7 +73,7 @@ the ability to answer the depositor is optional, and a blank is an answer.
 ## What the archive records without asking
 
 Three things exist in the personal record that the template does not collect,
-because the archive produces them rather than the depositor.
+because the archive produces them and not the depositor.
 
 The intake record for the deposit, including the channel it arrived on, which is
 `docs/decisions/intake.md`'s and exists so that an arrival leaves a trace.

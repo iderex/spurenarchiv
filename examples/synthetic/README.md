@@ -5,7 +5,7 @@ that the model has been filled in once, end to end, before a real trace is asked
 to go through it, and so that the test suite and anybody reading the format have
 a deposit to point at.
 
-It is not a measurement and it says so in its own fields rather than by sitting
+It is not a measurement and it says so in its own fields and not by sitting
 somewhere different. `converter` names the program that computed it, the whole
 apparatus carries `not_applicable` because there is no apparatus, and
 `dressing_spectrum` carries `estimated` because that curve was derived from the

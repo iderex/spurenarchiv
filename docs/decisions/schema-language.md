@@ -13,7 +13,7 @@ that cannot be applied to the syntax a deposit is written in is a translation
 layer, and the translation is a place for the format to stop being what the
 document says it is.
 
-The per-field sentence the model requires is a keyword in the schema rather than
+The per-field sentence the model requires is a keyword in the schema and not
 a comment beside it, and an empty one is refused by a schema over the schema.
 That is the line this record was decided on and it is set out in full below.
 
@@ -40,10 +40,10 @@ without any argument about its syntax being needed.
 MATLAB is the half this record cannot measure. `jsondecode` is documented as a
 built-in function of the base product, which is why JSON survives the criterion
 and TOML does not, and there is no MATLAB on the machine this was written on, so
-that is a claim rather than a measurement. It is the one line of this record that
+that is a claim and not a measurement. It is the one line of this record that
 is owed a command. The specification's read snippets are where it gets paid,
 because `container.md` requires the specification to show the read in both
-languages rather than assert that it is easy, and those snippets land with the
+languages instead of asserting that it is easy, and those snippets land with the
 deposit layout in issue #31. If a stock MATLAB turns out not to read JSON, it is
 this paragraph that was wrong and not issue #31's procedure.
 
@@ -69,7 +69,7 @@ of them can be written, which is the version below.
 
 Issue #21 requires each field to carry one sentence naming the reanalysis step
 that fails if the field is absent, and the issue is explicit that the sentence is
-part of the field's definition rather than documentation beside it. Issue #13
+part of the field's definition and not documentation beside it. Issue #13
 asked whether the schema language can refuse an empty one, or whether a separate
 check has to and that has to be stated.
 
@@ -79,7 +79,7 @@ so a schema over it is written in the same language, needs no second tool, and i
 evaluated by the same evaluator.
 
 The keyword is `withoutThisField`, on the object that defines a field. It is
-spelled in the casing JSON Schema's own keywords use rather than in the casing of
+spelled in the casing JSON Schema's own keywords use, not the casing of
 a deposit key, because it is a keyword of the schema and never appears in a
 deposit, and a reader who meets it in the wrong place should be able to tell.
 
@@ -93,7 +93,7 @@ but it is not what makes the slot non-empty. What makes it non-empty is an
 ordinary schema with `required` in it.
 
 The meta-schema is not versioned with the format. It is a statement about this
-repository's own artefacts rather than about what a depositor writes, so a
+repository's own artefacts and not about what a depositor writes, so a
 deposit never references it and a new schema version does not produce a new copy
 of it.
 
@@ -138,7 +138,7 @@ matching the shape the metadata states, or its checksum matching.
 Those are refusals of the validator, and this record does not let them be
 invisible in the normative artefact. A schema version carries a
 `deferred_checks` array listing each one by identifier, with the prose reference
-that specifies it. The array is data rather than a JSON Schema keyword, so it
+that specifies it. The array is data and not a JSON Schema keyword, so it
 constrains nothing and is not evaluated. What it does is keep the complete
 refusal set readable from `schema/`, so that somebody writing a second
 implementation from the specification finds the conditions the schema cannot
@@ -149,7 +149,7 @@ checks themselves belong to issues #32 and #33 with a fixture each.
 
 The metadata document carries `schema_version` as a string, two non-negative
 integers separated by a full stop, neither with a leading zero. `"1.0"` is the
-first. It is a string rather than a number because `1.10` and `1.1` are the same
+first. It is a string and not a number because `1.10` and `1.1` are the same
 JSON number and are different schema versions.
 
 `schema/1.0/` holds that version's files. `dataset.schema.json` is the schema for
@@ -187,7 +187,7 @@ A reader offered a major it does not carry refuses and names the version. It doe
 not fall back to the nearest version it has, because a deposit read under a
 schema it was not written against is precisely the silent convention confusion
 this archive exists against. A reader offered a higher minor of a major it does
-carry may read it, and reports the keys it did not recognise rather than dropping
+carry may read it, and reports the keys it did not recognise instead of dropping
 them, for the reason `absence.md` gives about writers that drop what they do not
 know.
 
@@ -214,7 +214,7 @@ where a fact matters enough to write it matters enough to have a field.
 **An integer that is written as a float.** JSON has one number type. JSON Schema's
 `"type": "integer"` refuses `1.5` and accepts `1.0`, so a shots-per-point of
 `1.0` passes a schema that says integer, and `conventions.md` requires counts and
-shots to be integers rather than floating point numbers that happen to hold one.
+shots to be integers and not floating point numbers that happen to hold one.
 The schema states `"type": "integer"` because it removes the larger half, and the
 remainder is a deferred check in the sense above: the validator refuses a numeric
 literal for an integer field that carries a fractional part or an exponent. The
@@ -231,7 +231,7 @@ document and the duplicate is gone by then.
 **A big integer.** JSON's number syntax has no bound and several parsers hold
 numbers as doubles, so an integer above two to the fifty-third does not survive
 every reader. Nothing in this model is expected to reach it. The bound is stated
-in the specification rather than assumed, so that a field which ever does reach it
+in the specification and never assumed, so that a field which ever does reach it
 is a change somebody makes deliberately.
 
 None of these is a reason to prefer a syntax the reanalyst's stock installation
