@@ -31,7 +31,7 @@ not, unless somebody ran the suite by hand and said so. That is the state issue
 ## The schema is the check list
 
 `docs/decisions/schema-language.md` made the schema under `schema/<version>/` the
-normative artefact. The validator evaluates it rather than restating its
+normative artefact. The validator evaluates it instead of restating its
 conditions in Rust, so there is one statement of what a deposit must be and not
 two that can disagree.
 
@@ -60,13 +60,13 @@ The field is the deposit key they would type. A missing key has no path of its
 own inside the document, which is the case where naming it is easiest to get
 wrong, so it is the one the suite pins by name.
 
-The remedy is decided by the schema keyword that refused, rather than written
+The remedy is decided by the schema keyword that refused, and not written
 beside each condition, so a remedy cannot drift away from the condition it is the
 remedy for.
 
 There are no warnings. A warning nobody has to act on trains a depositor to stop
 reading the output, and a field that is genuinely optional produces nothing at
-all rather than a line saying so.
+all and not a line saying so.
 
 ## Everything found in one run
 

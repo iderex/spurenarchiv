@@ -2,7 +2,7 @@
 
 A deposit has to survive being copied, mirrored, put on a memory stick and
 unpacked three years later by somebody who has none of this software. That is why
-the shape on disk is part of the specification rather than an implementation
+the shape on disk is part of the specification and not an implementation
 detail of whatever wrote it, and it is why this document is written to be
 complete on its own. `docs/decisions/layout.md` sets that obligation: a reader can
 implement a conforming parser from `docs/spec/` without opening the tool, and no
@@ -25,7 +25,7 @@ is the normative artefact `docs/decisions/layout.md` requires and which
 sees one document, so it decides the keys, the shape of an entry, the form of a
 path and the form of a digest, and it decides nothing that needs another file
 opened. The rules it cannot reach are listed by name in its `deferred_checks`
-array rather than left to be inferred from its silence.
+array and not left to be inferred from its silence.
 
 Those are decided by `.github/workflows/deposit-manifest.yml`, which reads a
 deposit directory, compares it against its manifest and names the path in every
@@ -44,14 +44,14 @@ file opened is outside what it answers. It names those on every run:
 
 So a real deposit whose files do not match its manifest still lands exactly as
 quietly as one whose files do, and its depositor still finds out from somebody
-else rather than from their own machine. That is the deposit-directory half of
+else and not from their own machine. That is the deposit-directory half of
 issue #32, with the check a depositor runs in #57. What has changed is narrower
-and is worth stating exactly: every rule below is now decidable rather than
+and is worth stating exactly: every rule below is now decidable and not
 prose, and each has been observed refusing the deposit it names.
 
 ## A deposit is a directory
 
-`docs/decisions/container.md` fixed that a dataset is a set of files rather than
+`docs/decisions/container.md` fixed that a dataset is a set of files and not
 one file, with its metadata in a text document beside the arrays.
 `docs/decisions/dataset-unit.md` fixed that a deposit is one or more datasets
 delivered together with a manifest listing every file. A directory is what those
@@ -60,9 +60,9 @@ two decisions already describe.
 An archive file is a transport form and not a deposit. A deposit may be sent as a
 `tar` or a `zip`, and what is inside is the directory, unpacked before anything
 reads it. The archive is not addressed, not hashed and not listed, and a reader
-handed one has been handed a container around a deposit rather than a deposit.
+handed one has been handed a container around a deposit, not a deposit.
 
-That line is drawn rather than left open for three reasons, and the first is the
+That line is drawn instead of left open for three reasons, and the first is the
 one that decides it. The comparison property is the reason `container.md` chose
 this shape at all: two copies of a dataset compare as bytes because the bytes are
 the values and nothing else. An archive layer puts that back. It carries
@@ -73,10 +73,10 @@ getting to canonical bytes does not then wrap them in a layer that is not.
 
 The second is the manifest. Its checksums are over files, and a file inside an
 archive is not a file until something extracts it, so a manifest checked without
-unpacking would be checking a copy the reader made rather than the deposit.
+unpacking would be checking a copy the reader made and not the deposit.
 
 The third is issue #35. A reader takes one delay slice out of a large array with a
-seek, which is what makes a memory ceiling a property rather than an observation.
+seek, which is what makes a memory ceiling a property and not an observation.
 A seek into a compressed member is not a seek.
 
 The cost is real and is paid knowingly. A directory of many files is slower to
@@ -112,7 +112,7 @@ implementations.
 
 Array file names are not fixed and are not part of any identity.
 `docs/decisions/identity.md` builds the measurement digest from a listing that
-carries each array's role rather than its file name, precisely so that renaming a
+carries each array's role and not its file name, precisely so that renaming a
 file or moving it between directories does not change which measurement it is. The
 metadata document names the array file for each role, so the name is a pointer the
 depositor writes and the digest does not depend on it.
@@ -136,7 +136,7 @@ reference spectrum, a photograph of the setup, a copy of the acquisition log.
 `docs/decisions/dataset-unit.md` admits it, requires it to be listed in the
 manifest, and requires that it is never read as measurement. It may sit at the
 deposit root or inside a dataset directory, it is listed either way, and its role
-in the manifest is what keeps it out of the measurement path rather than where it
+in the manifest is what keeps it out of the measurement path instead of where it
 happens to sit.
 
 ## The entry point is the manifest
@@ -147,7 +147,7 @@ reader does not fall back to walking the directory for anything that looks like 
 dataset.
 
 That is the harder direction and it is the one this document is for. A deposit
-that lost its manifest during a copy has to fail on inspection rather than read as
+that lost its manifest during a copy has to fail on inspection instead of reading as
 a deposit whose file list happens to be whatever survived. The fallback is the
 tempting behaviour and it is the one that turns a partial transfer into a
 successful read of less data than the depositor sent.

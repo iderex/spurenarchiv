@@ -4,10 +4,10 @@ Status: decided. Issue #12.
 
 ## The decision
 
-A dataset is a set of files rather than one file. Its metadata is a text
+A dataset is a set of files and not one file. Its metadata is a text
 document, and each array it carries is a separate file holding nothing but the
 array's values, one element after another in a stated order, with the shape, the
-element type and the byte order stated in the metadata rather than in a header on
+element type and the byte order stated in the metadata and not in a header on
 the bytes.
 
 The metadata sits beside the arrays, not inside them. That is the second half of
@@ -43,7 +43,7 @@ interpolation onto a uniform grid as an irreversible step. Storing the coordinat
 of every point costs a few kilobytes against a spectrogram of megabytes and
 removes the pressure entirely.
 
-The storage order is stated rather than assumed, and the specification carries the
+The storage order is stated and never assumed, and the specification carries the
 two-line read for each of the two readers this record commits to, because this is
 where the loss actually happens. The values run in one nested order, and the two
 languages that have to read them disagree about which order their own reshape
@@ -51,7 +51,7 @@ means: a block written with the delay index varying slowest, handed to a
 column-major reshape, comes back transposed. On a scan that is not square that
 fails loudly. On a square scan it produces a trace that reconstructs to a
 plausible wrong answer, which is issue #22's failure and the reason the order is
-a field rather than a convention.
+a field and not a convention.
 
 ## A metadata record large enough for the model
 
@@ -71,7 +71,7 @@ are all metadata, and none of them is a correction to the measurement.
 
 ## Readable from Python and MATLAB with nothing installed
 
-Both requirements are met by the shape rather than by a library. The array is a
+Both requirements are met by the shape and not by a library. The array is a
 flat block, so it is one call in each language to read it and one to give it its
 shape, and neither call comes from a package the reader has to obtain. The
 metadata is text, so at worst it is readable by eye and at best it is one call
@@ -123,7 +123,7 @@ is the one shape where the question does not change the format. The offset of an
 element is arithmetic on its indices, so a reader takes one delay slice out of a
 terabyte file with a seek, and a writer emits it a slice at a time without ever
 holding the whole array. Issue #35's memory ceiling is a property the reader can
-hold rather than one it observes, for the same reason.
+hold instead of one it observes, for the same reason.
 
 What a large deposit would still need is a transfer path and a chunked storage
 decision, and those are real work that this record does not do. What it does is

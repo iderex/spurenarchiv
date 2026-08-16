@@ -51,10 +51,11 @@ which is what shows the refusal reaches the contradiction and not the absence.
 `acquisition_order` is optional and carries the kind of order, and the visiting
 sequence itself where the depositor has it.
 
-This is the entry this document exists for. A scan taken monotonically from
-negative to positive delay puts any slow drift onto the delay axis as a linear
-term, and a linear term on the delay axis is a chirp. A randomised or interleaved
-order spreads the same drift into noise. The two arrays are indistinguishable and
+This is the entry that decides whether a drift reads as a chirp. A scan taken
+monotonically from negative to positive delay puts any slow drift onto the delay
+axis as a linear term, and a linear term on the delay axis is a chirp. A
+randomised or interleaved order spreads the same drift into noise. The two
+arrays are indistinguishable and
 the two conclusions are not.
 
 Absent here has to be one of the states rather than a plausible default, and
