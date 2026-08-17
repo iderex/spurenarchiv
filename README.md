@@ -49,3 +49,9 @@ run rather than a thing somebody notices later.
 what is not.
 
 See [NOTICE.md](NOTICE.md) for the intended-use notice.
+
+## License
+
+AGPL-3.0, copyright 2026 Nils Lehnen.
+
+The full text is in [LICENSE](LICENSE).
