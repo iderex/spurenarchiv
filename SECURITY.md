@@ -7,6 +7,10 @@ Security tab and choose "Report a vulnerability". The report stays private
 between you and the maintainers until a fix is published or the report is
 closed.
 
+The form is here, without navigating:
+
+<https://github.com/iderex/spurenarchiv/security/advisories/new>
+
 That is the route this project asks for. Please do not open a public issue for a
 vulnerability, and please do not send the details to a personal address: a public
 issue publishes the problem before there is a fix, and a mail thread puts the
